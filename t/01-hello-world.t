@@ -2,7 +2,7 @@ use Java::Generate::Class;
 use Java::Generate::JavaMethod;
 use Java::Generate::JavaParameter;
 use Java::Generate::JavaSignature;
-use Java::Generate::Literal;
+use Java::Generate::Literal::StringLiteral;
 use Java::Generate::Statement::MethodCall;
 use Java::Generate::Variable::StaticVariable;
 use Test;
@@ -23,7 +23,7 @@ my $out = StaticVariable.new(
 my $statements = MethodCall.new(
     object => $out,
     :name<println>,
-    arguments => Java::Generate::Literal::StringLiteral.new(value => 'Hello, World')
+    arguments => StringLiteral.new(value => 'Hello, World')
 );
 
 my $hello-method = JavaMethod.new(
