@@ -7,6 +7,8 @@ use Java::Generate::Statement::MethodCall;
 use Java::Generate::Variable::StaticVariable;
 use Test;
 
+plan 1;
+
 my $signature = JavaSignature.new(
     parameters => JavaParameter.new(:type<String[]>, :name<args>)
 );
