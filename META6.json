@@ -1,0 +1,17 @@
+{
+  "name": "Java::Generate",
+  "perl": "6.c",
+  "depends": [
+    
+  ],
+  "tags": [
+    
+  ],
+  "provides": {
+    
+  },
+  "meta-version": 1,
+  "version": "0.0.0",
+  "description": "Nondescript",
+  "authors": "Altai-man <altay-man@mail.ru>"
+}
