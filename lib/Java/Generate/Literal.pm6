@@ -48,3 +48,13 @@ class StringLiteral does Argument {
         "\"$!value\""
     }
 }
+
+class NullLiteral does Argument {
+    method generate(--> Str) { "null" }
+}
+
+class BooleanLiteral does Argument {
+    has Bool $.value;
+
+    method generate(--> Str) { $!value ?? 'true' !! 'false' }
+}
