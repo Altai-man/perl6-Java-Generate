@@ -1,7 +1,7 @@
 use Java::Generate::Literal;
 use Test;
 
-plan 23;
+plan 26;
 
 is Java::Generate::Literal::IntLiteral.new(0, 'dec').generate, '0', 'Zero decimal';
 is Java::Generate::Literal::IntLiteral.new(2, 'dec').generate, '2', 'Positive decimal';
