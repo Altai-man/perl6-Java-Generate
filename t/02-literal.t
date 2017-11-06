@@ -1,7 +1,7 @@
 use Java::Generate::Literal;
 use Test;
 
-plan 26;
+plan 29;
 
 is Java::Generate::Literal::IntLiteral.new(0, 'dec').generate, '0', 'Zero decimal';
 is Java::Generate::Literal::IntLiteral.new(2, 'dec').generate, '2', 'Positive decimal';
@@ -38,3 +38,7 @@ is Java::Generate::Literal::IntLiteral.new(-2 ** 63, 'bin').generate, '0b1000000
 is Java::Generate::Literal::FloatLiteral.new(value => 10.Num).generate, '10f', 'Float 10';
 is Java::Generate::Literal::FloatLiteral.new(value => 0.3.Num).generate, '0.3f', 'Float 0.3';
 is Java::Generate::Literal::FloatLiteral.new(value => 6.022137e+23.Num).generate, '6.022137e+23f', 'Float';
+
+is Java::Generate::Literal::StringLiteral.new(value => 'Hello World!').generate, '"Hello World!"', 'ASCII string';
+is Java::Generate::Literal::StringLiteral.new(value => 'Hello, ¥ and Unicode!').generate, '"Hello, \u00A5 and Unicode!"', 'BMP Unicode string';
+is Java::Generate::Literal::StringLiteral.new(value => 'Hello, 𐀀 and non-BMP Unicode!').generate, '"Hello, \uD800\uDC00 and non-BMP Unicode!"', 'Non-BMP Unicode string';
