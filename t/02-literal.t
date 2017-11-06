@@ -34,3 +34,7 @@ is Java::Generate::Literal::IntLiteral.new(-2 ** 63, 'hex').generate, '0x8000000
 
 is Java::Generate::Literal::IntLiteral.new(2 ** 63 - 1, 'bin').generate, '0b0111111111111111111111111111111111111111111111111111111111111111L', 'Maximal bin long';
 is Java::Generate::Literal::IntLiteral.new(-2 ** 63, 'bin').generate, '0b1000000000000000000000000000000000000000000000000000000000000000L', 'Minimal bin long';
+
+is Java::Generate::Literal::FloatLiteral.new(value => 10.Num).generate, '10f', 'Float 10';
+is Java::Generate::Literal::FloatLiteral.new(value => 0.3.Num).generate, '0.3f', 'Float 0.3';
+is Java::Generate::Literal::FloatLiteral.new(value => 6.022137e+23.Num).generate, '6.022137e+23f', 'Float';
