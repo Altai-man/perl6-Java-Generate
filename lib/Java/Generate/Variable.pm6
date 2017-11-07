@@ -11,25 +11,25 @@ role Variable does ASTNode is export {
 }
 
 class InstanceVariable does Variable is export {
-    has AccessLevel $.access-level;
+    has AccessLevel $.access;
     has $.default;
 
     method generate(--> Str) {
         $!default ??
-        "{$!access-level} {$!type} {$!name} = {$!default};" !!
-        "{$!access-level} {$!type} {$!name};";
+        "{$!access} {$!type} {$!name} = {$!default};" !!
+        "{$!access} {$!type} {$!name};";
     }
 }
 
 class StaticVariable does Variable is export {
-    has AccessLevel $.access-level;
+    has AccessLevel $.access;
     has $.default;
     has $.class;
 
     method generate(--> Str) {
         $!default ??
-        "{$!access-level} static {$!type} {$!name} = {$!default};" !!
-        "{$!access-level} static {$!type} {$!name};";
+        "{$!access} static {$!type} {$!name} = {$!default};" !!
+        "{$!access} static {$!type} {$!name};";
     }
 
     method generate-caller(--> Str) {

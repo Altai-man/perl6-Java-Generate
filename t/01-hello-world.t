@@ -16,7 +16,7 @@ my $signature = JavaSignature.new(
 my $out = StaticVariable.new(
     :name<out>,
     :type<PrintStream>,
-    :access-level<public>,
+    :access<public>,
     class => 'System'
 );
 
