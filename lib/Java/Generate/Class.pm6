@@ -26,10 +26,12 @@ class Class does ASTNode {
             die "Class {$!name} must implement: $methods";
         }
 
-        my $code = qq:to/END/;
-        {$!access}{@!modifiers ?? ' ' ~ @!modifiers !! ''} class {$!name}{@!interfaces ?? ' implements ' ~ @!interfaces.map(*.name).join(', ') !! '' }{$!super ?? ' extends ' ~ $!super.name !! ''} \{
-
-        END
+        my $code = "{$!access}";
+        $code ~= " {@!modifiers}" if @!modifiers;
+        $code ~= " class {$!name}";
+        $code ~= ' implements ' ~ @!interfaces.map(*.name).join(', ') if @!interfaces;
+        $code ~= " extends {$!super.name}" if $!super;
+        $code ~= " \{\n\n";
         $code ~= @!static-fields.map(*.generate()).join("\n").indent(4) ~ "\n" if @!static-fields;
         $code ~= @!fields.map(*.generate()).join("\n").indent(4) ~ "\n" if @!fields;
         $code ~= @!methods.map(*.generate()).join("\n").indent(4) ~ "\n" if @!methods;
