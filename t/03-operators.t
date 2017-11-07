@@ -3,7 +3,7 @@ use Java::Generate::Literal;
 use Java::Generate::Variable;
 use Test;
 
-plan 9;
+plan 10;
 
 my ($left, $right);
 
@@ -41,6 +41,9 @@ my $cond  = InfixOp.new(left => IntLiteral.new(10, 'dec'), right => IntLiteral.n
 my $true  = InstanceVariable.new(:name<a>);
 my $false = InstanceVariable.new(:name<b>);
 is Ternary.new(:$cond, :$true, :$false).generate, '10 > 5 ? a : b', "Ternary operator";
+
+$cond  = InfixOp.new(left => IntLiteral.new(10, 'dec'), right => IntLiteral.new(5, 'dec'), op => '+');
+dies-ok { Ternary.new(:$cond, :$true, :$false).generate }, "Ternary operator's condition works with boolean only";
 
 $left = InstanceVariable.new(:name<a>);
 is PostfixOp.new(:$left, :op<++>).generate, 'a++', 'Postfix op';

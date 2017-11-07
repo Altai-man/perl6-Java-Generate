@@ -65,6 +65,10 @@ class Ternary does Expression is export {
     has Operand $.false;
 
     method generate(--> Str) {
+        unless $!cond.op eq '<'|'>'|'=='|'!='|'&&'|'||' {
+            die "Ternary operator condition expression is not boolean, it\'s operator is {$!cond.op}";
+        }
+
         my $true  = $_ ~~ Variable ?? .reference() !! .generate() given $!true;
         my $false = $_ ~~ Variable ?? .reference() !! .generate() given $!false;
         "{$!cond.generate} ? $true : $false"
