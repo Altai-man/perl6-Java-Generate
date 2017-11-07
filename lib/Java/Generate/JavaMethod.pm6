@@ -3,12 +3,25 @@ use Java::Generate::JavaSignature;
 use Java::Generate::Statement;
 use Java::Generate::Utils;
 
-class JavaMethod does ASTNode {
+unit module Java::Generate::JavaMethod;
+
+role JavaMethod does ASTNode is export {
     has AccessLevel $.access;
     has Str $.name;
     has JavaSignature $.signature;
-    has Statement @.statements;
     has Str $.return-type;
+}
+
+class InterfaceMethod does JavaMethod is export {
+    method generate(--> Str) {
+        qq:to/END/;
+        {$!access} {$!return-type} {$!name}();
+        END
+    }
+}
+
+class ClassMethod does JavaMethod is export {
+    has Statement @.statements;
     has Modifier @.modifiers;
 
     method generate(--> Str) {

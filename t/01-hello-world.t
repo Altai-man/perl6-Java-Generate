@@ -26,7 +26,7 @@ my $statements = MethodCall.new(
     arguments => StringLiteral.new(value => 'Hello, World')
 );
 
-my $hello-method = JavaMethod.new(
+my $hello-method = ClassMethod.new(
     :access<public>,
     :name<main>,
     :$signature, :$statements
