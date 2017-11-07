@@ -6,6 +6,7 @@ unit module Java::Generate::Variable;
 role Variable does ASTNode is export {
     has $.name;
     has $.type;
+    has Modifier @.modifiers;
 
     method reference(--> Str) { "{$!name}" }
 }
@@ -15,9 +16,8 @@ class InstanceVariable does Variable is export {
     has $.default;
 
     method generate(--> Str) {
-        $!default ??
-        "{$!access} {$!type} {$!name} = {$!default};" !!
-        "{$!access} {$!type} {$!name};";
+        my $res = "{$!access}{@!modifiers ?? ' ' ~ @!modifiers.join(', ') !! '' } {$!type} {$!name}";
+        $res ~  ($!default ?? " = {$!default};" !! ";")
     }
 }
 
@@ -27,9 +27,8 @@ class StaticVariable does Variable is export {
     has $.class;
 
     method generate(--> Str) {
-        $!default ??
-        "{$!access} static {$!type} {$!name} = {$!default};" !!
-        "{$!access} static {$!type} {$!name};";
+        my $res = "{$!access} static{@!modifiers ?? ' ' ~ @!modifiers.join(', ') !! '' } {$!type} {$!name}";
+        $res ~  ($!default ?? " = {$!default};" !! ";")
     }
 
     method generate-caller(--> Str) {

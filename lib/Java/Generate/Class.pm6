@@ -12,6 +12,7 @@ class Class does ASTNode {
     has ClassMethod @.methods;
     has Class $.super;
     has Interface @.interfaces;
+    has Modifier @.modifiers;
 
     method generate(--> Str) {
         my $interfaces-to-implement = @!interfaces.Array;
@@ -25,13 +26,14 @@ class Class does ASTNode {
             die "Class {$!name} must implement: $methods";
         }
 
-        qq:to/END/;
-        $!access class {$!name}{@!interfaces ?? ' implements ' ~ @!interfaces.map(*.name).join(', ') !! '' }{$!super ?? ' extends ' ~ $!super.name !! ''} \{
+        my $code = qq:to/END/;
+        {$!access}{@!modifiers ?? ' ' ~ @!modifiers !! ''} class {$!name}{@!interfaces ?? ' implements ' ~ @!interfaces.map(*.name).join(', ') !! '' }{$!super ?? ' extends ' ~ $!super.name !! ''} \{
 
-        @!static-fields.map(*.generate()).join("\n").indent(4)
-        @!fields.map(*.generate()).join("\n").indent(4)
-        @!methods.map(*.generate()).join("\n").indent(4)
-        \}
         END
+        $code ~= @!static-fields.map(*.generate()).join("\n").indent(4) ~ "\n" if @!static-fields;
+        $code ~= @!fields.map(*.generate()).join("\n").indent(4) ~ "\n" if @!fields;
+        $code ~= @!methods.map(*.generate()).join("\n").indent(4) ~ "\n" if @!methods;
+        $code ~= "}\n";
+        $code;
     }
 }

@@ -76,7 +76,6 @@ my $class-c = Class.new(
 $code = qq:to/END/;
 public class C extends B \{
 
-
 \}
 END
 

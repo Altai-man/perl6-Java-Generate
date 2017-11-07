@@ -14,17 +14,17 @@ my $class-a = Class.new(
     :access<public>,
     :name<A>,
     :@fields,
-    :@static-fields
+    :@static-fields,
+    modifiers => <static final>
 );
 
 my $code = qq:to/END/;
-public class A \{
+public static final class A \{
 
     public static float field_c = 3.2;
     private static Custom field_d;
     public int field_a = 5;
     public int field_b;
-
 \}
 END
 
