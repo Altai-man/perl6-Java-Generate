@@ -1,8 +1,7 @@
 use Java::Generate::ASTNode;
 use Java::Generate::JavaMethod;
 use Java::Generate::Utils;
-use Java::Generate::Variable::InstanceVariable;
-use Java::Generate::Variable::StaticVariable;
+use Java::Generate::Variable;
 
 class Class does ASTNode {
     has AccessLevel $.access;

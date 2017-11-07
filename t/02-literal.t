@@ -1,6 +1,4 @@
-use Java::Generate::Literal::IntLiteral;
-use Java::Generate::Literal::FloatLiteral;
-use Java::Generate::Literal::StringLiteral;
+use Java::Generate::Literal;
 use Test;
 
 plan 29;

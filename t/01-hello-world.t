@@ -2,9 +2,9 @@ use Java::Generate::Class;
 use Java::Generate::JavaMethod;
 use Java::Generate::JavaParameter;
 use Java::Generate::JavaSignature;
-use Java::Generate::Literal::StringLiteral;
+use Java::Generate::Literal;
 use Java::Generate::Statement::MethodCall;
-use Java::Generate::Variable::StaticVariable;
+use Java::Generate::Variable;
 use Test;
 
 plan 1;
