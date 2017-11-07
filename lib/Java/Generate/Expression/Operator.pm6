@@ -6,7 +6,11 @@ use Java::Generate::Variable;
 
 my subset Operand where Variable|Literal|Expression;
 
-class SingleOp does Expression {
+class PrefixOp does Expression {
+    method generate() {...}
+}
+
+class PostfixOp does Expression {
     method generate() {...}
 }
 
@@ -20,7 +24,7 @@ class Assignment does Expression is export {
     }
 }
 
-class BinOp does Expression is export {
+class InfixOp does Expression is export {
     my subset Op of Str where '+'|'-'|'*'|'/'|'%'|
                               '<<'|'>>'|'>>>'|
                               '&'|'^'|'|'|
@@ -33,12 +37,14 @@ class BinOp does Expression is export {
     method generate(--> Str) {
         my $left  = $_ ~~ Variable ?? .reference() !! .generate() given $!left;
         my $right = $_ ~~ Variable ?? .reference() !! .generate() given $!right;
+        $left  = "($left)"  if $!left  ~~ Expression;
+        $right = "($right)" if $!right ~~ Expression;
         "$left {$!op} $right"
     }
 }
 
 class Ternary does Expression is export {
-    has BinOp $.cond;
+    has InfixOp $.cond;
     has Operand $.true;
     has Operand $.false;
 
