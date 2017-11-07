@@ -28,6 +28,8 @@ class Class does ASTNode {
         qq:to/END/;
         $!access class {$!name}{@!interfaces ?? ' implements ' ~ @!interfaces.map(*.name).join(', ') !! '' }{$!super ?? ' extends ' ~ $!super.name !! ''} \{
 
+        @!static-fields.map(*.generate()).join("\n").indent(4)
+        @!fields.map(*.generate()).join("\n").indent(4)
         @!methods.map(*.generate()).join("\n").indent(4)
         \}
         END
