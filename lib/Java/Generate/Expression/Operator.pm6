@@ -6,12 +6,28 @@ use Java::Generate::Variable;
 
 my subset Operand where Variable|Literal|Expression;
 
-class PrefixOp does Expression {
-    method generate() {...}
+class PrefixOp does Expression is export {
+    my subset Op of Str where '++'|'--'|'+'|'-'|'~'|'!';
+    has Operand $.right;
+    has Op $.op;
+
+    method generate() {
+        my $right = $_ ~~ Variable ?? .reference() !! .generate() given $!right;
+        $right = "($right)" if $!right ~~ Expression;
+        "{$!op}$right"
+    }
 }
 
-class PostfixOp does Expression {
-    method generate() {...}
+class PostfixOp does Expression is export {
+    my subset Op of Str where '++'|'--';
+    has Operand $.left;
+    has Op $.op;
+
+    method generate() {
+        my $left = $_ ~~ Variable ?? .reference() !! .generate() given $!left;
+        $left = "($left)" if $!left ~~ Expression;
+        "{$left}{$!op}"
+    }
 }
 
 class Assignment does Expression is export {
