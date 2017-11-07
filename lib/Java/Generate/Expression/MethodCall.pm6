@@ -1,8 +1,8 @@
 use Java::Generate::Argument;
-use Java::Generate::Statement;
+use Java::Generate::Expression;
 use Java::Generate::Variable;
 
-class MethodCall does Statement {
+class MethodCall does Expression {
     has Variable $.object;
     has Str $.name;
     has Argument @.arguments;
