@@ -25,7 +25,7 @@ class FloatLiteral does Argument does Literal is export {
     }
 }
 
-class IntLiteral does Argument is export {
+class IntLiteral does Argument does Literal is export {
     has Int $.value;
     has Base $.base;
 
