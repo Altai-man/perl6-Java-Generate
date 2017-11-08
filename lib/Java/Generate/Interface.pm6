@@ -9,9 +9,10 @@ class Interface does ASTNode {
     has InterfaceMethod @.methods;
 
     method generate(--> Str) {
-        qq:to/END/;
-        $!access interface {$!name}{@!interfaces ?? ' extends ' ~ @!interfaces.map(*.name).join(', ') !! '' } \{
-        {@!methods.map(*.generate).join.indent(4)}\}
-        END
+        my $code = "$!access interface {$!name}";
+        $code ~= ' extends ' ~ @!interfaces.map(*.name).join(', ') if @!interfaces;
+        $code ~= " \{";
+        $code ~= "\n" ~ @!methods.map(*.generate).join("\n").indent(4) if @!methods;
+        $code ~= "\n\}\n";
     }
 }

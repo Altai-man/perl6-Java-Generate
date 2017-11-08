@@ -10,16 +10,16 @@ my ($code, @methods);
 
 $code = qq:to/END/;
 public interface Animal \{
-    public void eat\(\);
-    public void travel\(\);
+    public void eat();
+    public void travel();
 \}
 END
 
 my $signature1 = JavaSignature.new(:parameters());
 my $signature2 = JavaSignature.new(:parameters());
 
-@methods = InterfaceMethod.new(:access<public>, :name<eat>, :$signature1, :return-type<void>),
-           InterfaceMethod.new(:access<public>, :name<travel>, :$signature2, :return-type<void>);
+@methods = InterfaceMethod.new(:access<public>, :name<eat>,    :return-type<void>),
+           InterfaceMethod.new(:access<public>, :name<travel>, :return-type<void>);
 
 my $interface-a = Interface.new(:access<public>, :name<Animal>, :@methods);
 is $interface-a.generate, $code, 'Interface is generated';
@@ -54,12 +54,12 @@ my $class-b = Class.new(
 $code = qq:to/END/;
 public class B implements Mammal \{
 
-    public  void eat () \{
-        
+    public  void eat() \{
+
     \}
 
-    public  void travel () \{
-        
+    public  void travel() \{
+
     \}
 
 \}

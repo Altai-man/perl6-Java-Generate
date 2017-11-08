@@ -10,6 +10,7 @@ class Class does ASTNode {
     has InstanceVariable @.fields;
     has StaticVariable @.static-fields;
     has ClassMethod @.methods;
+    has ConstructorMethod @.constructors;
     has Class $.super;
     has Interface @.interfaces;
     has Modifier @.modifiers;
@@ -26,16 +27,16 @@ class Class does ASTNode {
             die "Class {$!name} must implement: $methods";
         }
 
-        my $code = "{$!access}";
-        $code ~= " {@!modifiers}" if @!modifiers;
-        $code ~= " class {$!name}";
+        my $code = "{$!access} ";
+        $code ~= "{@!modifiers} " if @!modifiers;
+        $code ~= "class {$!name}";
         $code ~= ' implements ' ~ @!interfaces.map(*.name).join(', ') if @!interfaces;
         $code ~= " extends {$!super.name}" if $!super;
         $code ~= " \{\n\n";
         $code ~= @!static-fields.map(*.generate()).join("\n").indent(4) ~ "\n" if @!static-fields;
         $code ~= @!fields.map(*.generate()).join("\n").indent(4) ~ "\n" if @!fields;
+        $code ~= @!constructors.map(*.generate()).join("\n").indent(4) ~ "\n" if @!constructors;
         $code ~= @!methods.map(*.generate()).join("\n").indent(4) ~ "\n" if @!methods;
         $code ~= "}\n";
-        $code;
     }
 }

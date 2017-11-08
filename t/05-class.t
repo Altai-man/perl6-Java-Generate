@@ -1,8 +1,11 @@
-use Java::Generate::Variable;
 use Java::Generate::Class;
+use Java::Generate::JavaMethod;
+use Java::Generate::JavaParameter;
+use Java::Generate::JavaSignature;
+use Java::Generate::Variable;
 use Test;
 
-plan *;
+plan 2;
 
 my @fields = InstanceVariable.new(:name<field_a>, :type<int>, :access<public>, :default<5>),
              InstanceVariable.new(:name<field_b>, :type<int>, :access<public>);
@@ -30,4 +33,27 @@ END
 
 is $class-a.generate, $code, 'Class with fields';
 
-done-testing;
+$code = qq:to/END/;
+public class Student \{
+
+    Student(int i, String n) \{\}
+    Student(int i, String n, int a) \{\}
+\}
+END
+
+my $constructor1 = JavaSignature.new(:parameters(JavaParameter.new('i', 'int'),
+                                                 JavaParameter.new('n', 'String')));
+my $constructor2 = JavaSignature.new(:parameters(JavaParameter.new('i', 'int'),
+                                                 JavaParameter.new('n', 'String'),
+                                                 JavaParameter.new('a', 'int')));
+
+my @constructors = ConstructorMethod.new(:name<Student>, signature => $constructor1),
+                   ConstructorMethod.new(:name<Student>, signature => $constructor2);
+
+my $class-student = Class.new(
+    :access<public>,
+    :name<Student>,
+    :@constructors
+);
+
+is $class-student.generate, $code, 'Class with constructors';

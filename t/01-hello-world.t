@@ -10,7 +10,7 @@ use Test;
 plan 1;
 
 my $signature = JavaSignature.new(
-    parameters => JavaParameter.new(:type<String[]>, :name<args>)
+    parameters => JavaParameter.new('args', 'String[]')
 );
 
 my $out = StaticVariable.new(
@@ -43,7 +43,7 @@ my $hello-class = Class.new(
 my $java = qq:to/END/;
 public class HelloWorld \{
 
-    public static void main (String[] args) \{
+    public static void main(String[] args) \{
         System.out.println("Hello, World");
     \}
 
