@@ -54,11 +54,11 @@ my $class-b = Class.new(
 $code = qq:to/END/;
 public class B implements Mammal \{
 
-    public  void eat() \{
+    public void eat() \{
 
     \}
 
-    public  void travel() \{
+    public void travel() \{
 
     \}
 
