@@ -52,7 +52,6 @@ class ClassMethod does JavaMethod is export {
                     %locals{$var.name} = .variable;
                     %locals{$var.name}.initialized = True if $var.default;
                 } elsif $_ ~~ Expression {
-                    # Expression
                     %locals{.left.name}.initialized = True if $_ ~~ Assignment;
                     for .operands {
                         die "Variable 「$_」 is not declared"     unless %locals{$_};
