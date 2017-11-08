@@ -6,6 +6,7 @@ unit module Java::Generate::Variable;
 role Variable does ASTNode is export {
     has $.name;
     has $.type;
+    has $.default;
     has Modifier @.modifiers;
 
     method reference(--> Str) { "{$!name}" }
@@ -13,25 +14,31 @@ role Variable does ASTNode is export {
 
 class InstanceVariable does Variable is export {
     has AccessLevel $.access;
-    has $.default;
 
     method generate(--> Str) {
-        my $res = "{$!access}{@!modifiers ?? ' ' ~ @!modifiers.join(', ') !! '' } {$!type} {$!name}";
-        $res ~  ($!default ?? " = {$!default};" !! ";")
+        my $code = "{$!access}{@!modifiers ?? ' ' ~ @!modifiers.join(', ') !! '' } {$!type} {$!name}";
+        $code ~  ($!default ?? " = {$!default};" !! ";")
     }
 }
 
 class StaticVariable does Variable is export {
     has AccessLevel $.access;
-    has $.default;
     has $.class;
 
     method generate(--> Str) {
-        my $res = "{$!access} static{@!modifiers ?? ' ' ~ @!modifiers.join(', ') !! '' } {$!type} {$!name}";
-        $res ~  ($!default ?? " = {$!default};" !! ";")
+        my $code = "{$!access} static{@!modifiers ?? ' ' ~ @!modifiers.join(', ') !! '' } {$!type} {$!name}";
+        $code ~  ($!default ?? " = {$!default};" !! ";")
     }
 
-    method generate-caller(--> Str) {
+    method reference(--> Str) {
         "{$!class}.{$!name}"
+    }
+}
+
+class LocalVariable does Variable is export {
+    method generate() {
+        my $code = @!modifiers.join(', ') ~ ' ' if @!modifiers;
+        $code ~= "{$!type} {$!name}";
+        $code ~= $!default ?? " = {$!default};" !! ";"
     }
 }
