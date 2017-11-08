@@ -27,7 +27,7 @@ class Class does ASTNode {
             die "Class {$!name} must implement: $methods";
         }
 
-        my $code = "{$!access} ";
+        my $code = $!access ?? "{$!access} " !! '';
         $code ~= "{@!modifiers} " if @!modifiers;
         $code ~= "class {$!name}";
         $code ~= ' implements ' ~ @!interfaces.map(*.name).join(', ') if @!interfaces;

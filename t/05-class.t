@@ -5,7 +5,7 @@ use Java::Generate::JavaSignature;
 use Java::Generate::Variable;
 use Test;
 
-plan 2;
+plan 3;
 
 my @fields = InstanceVariable.new(:name<field_a>, :type<int>, :access<public>, :default<5>),
              InstanceVariable.new(:name<field_b>, :type<int>, :access<public>);
@@ -57,3 +57,13 @@ my $class-student = Class.new(
 );
 
 is $class-student.generate, $code, 'Class with constructors';
+
+$code = qq:to/END/;
+class MyPackage \{
+
+\}
+END
+
+my $class-my-package = Class.new(:access(''), :name<MyPackage>);
+
+is $class-my-package.generate, $code, 'Class with package access level';
