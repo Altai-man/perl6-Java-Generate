@@ -39,7 +39,11 @@ class ClassMethod does JavaMethod is export {
         my $code = "{$!access}";
         $code ~= ' ' ~ @!modifiers.join(' ') if @!modifiers;
         $code ~= " {$!return-type} {$!name}({$!signature.generate()}) \{\n";
-        $code ~= @!statements.map(*.generate()).join("\n").indent(4) if @!statements;
+        $code ~= @!statements.map(
+            {
+                my $c = .generate();
+                $c.ends-with(';') ?? $c !! $c ~ ';'
+            }).join("\n").indent(4) if @!statements;
         $code ~= "\n\}\n";
     }
 }

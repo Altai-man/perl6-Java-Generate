@@ -1,3 +1,4 @@
+use Java::Generate::Expression;
 use Java::Generate::Variable;
 use Java::Generate::JavaSignature;
 use Java::Generate::JavaMethod;
@@ -13,6 +14,7 @@ public void foo() \{
     final int a;
     int b = 5;
     double c;
+    a++;
 \}
 END
 
@@ -20,7 +22,8 @@ my $signature1 = JavaSignature.new(:parameters());
 my $variable = LocalVariable.new(:name<a>, :modifiers<final>, :type<int>);
 my @statements = VariableDeclaration.new($variable),
                  VariableDeclaration.new('b', 'int', (), 5),
-                 VariableDeclaration.new('c', 'double', ());
+                 VariableDeclaration.new('c', 'double', ()),
+                 PostfixOp.new(left => LocalVariable.new(:name<a>), :op<++>);
 my $method = ClassMethod.new(:access<public>, :name<foo>,
                              signature => $signature1, :return-type<void>,
                              :@statements);
