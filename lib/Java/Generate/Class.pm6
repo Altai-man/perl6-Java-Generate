@@ -27,6 +27,11 @@ class Class does ASTNode {
             die "Class {$!name} must implement: $methods";
         }
 
+        my Variable %vars;
+        for flat @!static-fields, @!fields {
+            %vars{.name} = $_;
+        }
+
         my $code = $!access ?? "{$!access} " !! '';
         $code ~= "{@!modifiers} " if @!modifiers;
         $code ~= "class {$!name}";
@@ -36,7 +41,7 @@ class Class does ASTNode {
         $code ~= @!static-fields.map(*.generate()).join("\n").indent(4) ~ "\n" if @!static-fields;
         $code ~= @!fields.map(*.generate()).join("\n").indent(4) ~ "\n" if @!fields;
         $code ~= @!constructors.map(*.generate()).join("\n").indent(4) ~ "\n" if @!constructors;
-        $code ~= @!methods.map(*.generate()).join("\n").indent(4) ~ "\n" if @!methods;
+        $code ~= @!methods.map(*.generate(:%vars)).join("\n").indent(4) ~ "\n" if @!methods;
         $code ~= "}\n";
     }
 }

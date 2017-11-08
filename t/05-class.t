@@ -72,7 +72,7 @@ is $class-my-package.generate, $code, 'Class with package access level';
 
 $code = "count > 1 ? new Student(\"Name\") : new Student(\"Name\", 1)";
 
-my $cond  = InfixOp.new(left => InstanceVariable.new(:name<count>), right => IntLiteral.new(1, 'dec'), op => '>');
+my $cond  = InfixOp.new(left => LocalVariable.new(:name<count>), right => IntLiteral.new(1, 'dec'), op => '>');
 my $true  = ConstructorCall.new(:name<Student>, arguments => StringLiteral.new(value => 'Name'));
 my $false = ConstructorCall.new(:name<Student>, arguments => [StringLiteral.new(value => 'Name'), IntLiteral.new(1, 'dec')]);
 is Ternary.new(:$cond, :$true, :$false).generate, $code, "new operator";
