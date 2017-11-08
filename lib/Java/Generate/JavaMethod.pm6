@@ -36,10 +36,10 @@ class ClassMethod does JavaMethod is export {
     has Str $.return-type;
 
     method generate(--> Str) {
-        qq:to/END/;
-        {$!access} {@!modifiers.join(' ')} {$!return-type} {$!name}({$!signature.generate()}) \{
-        {@!statements.map(*.generate()).join.indent(4)}
-        \}
-        END
+        my $code = "{$!access}";
+        $code ~= ' ' ~ @!modifiers.join(' ') if @!modifiers;
+        $code ~= " {$!return-type} {$!name}({$!signature.generate()}) \{\n";
+        $code ~= @!statements.map(*.generate()).join("\n").indent(4) if @!statements;
+        $code ~= "\n\}\n";
     }
 }
