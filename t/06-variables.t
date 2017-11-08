@@ -58,7 +58,7 @@ $method = ClassMethod.new(:access<public>, :name<bar>,
 dies-ok { $method.generate }, 'Cannot use undeclared local variable';
 
 # Usage of instance fields is ok
-@statements = PostfixOp.new(left => LocalVariable.new(:name<a>), :op<++>);
+@statements = PostfixOp.new(left => InstanceVariable.new(:name<a>), :op<++>);
 $method = ClassMethod.new(:access<public>, :name<bar>,
                           :$signature, :return-type<void>,
                           :@statements);
