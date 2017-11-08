@@ -1,6 +1,5 @@
 use Java::Generate::Class;
-use Java::Generate::Expression::ConstructorCall;
-use Java::Generate::Expression::Operator;
+use Java::Generate::Expression;
 use Java::Generate::JavaMethod;
 use Java::Generate::JavaParameter;
 use Java::Generate::JavaSignature;

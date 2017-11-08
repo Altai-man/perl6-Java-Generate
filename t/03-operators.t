@@ -1,4 +1,4 @@
-use Java::Generate::Expression::Operator;
+use Java::Generate::Expression;
 use Java::Generate::Literal;
 use Java::Generate::Variable;
 use Test;
