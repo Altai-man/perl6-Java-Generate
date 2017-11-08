@@ -1,11 +1,14 @@
 use Java::Generate::Class;
+use Java::Generate::Expression::ConstructorCall;
+use Java::Generate::Expression::Operator;
 use Java::Generate::JavaMethod;
 use Java::Generate::JavaParameter;
 use Java::Generate::JavaSignature;
+use Java::Generate::Literal;
 use Java::Generate::Variable;
 use Test;
 
-plan 3;
+plan 4;
 
 my @fields = InstanceVariable.new(:name<field_a>, :type<int>, :access<public>, :default<5>),
              InstanceVariable.new(:name<field_b>, :type<int>, :access<public>);
@@ -67,3 +70,10 @@ END
 my $class-my-package = Class.new(:access(''), :name<MyPackage>);
 
 is $class-my-package.generate, $code, 'Class with package access level';
+
+$code = "count > 1 ? new Student(\"Name\") : new Student(\"Name\", 1)";
+
+my $cond  = InfixOp.new(left => InstanceVariable.new(:name<count>), right => IntLiteral.new(1, 'dec'), op => '>');
+my $true  = ConstructorCall.new(:name<Student>, arguments => StringLiteral.new(value => 'Name'));
+my $false = ConstructorCall.new(:name<Student>, arguments => [StringLiteral.new(value => 'Name'), IntLiteral.new(1, 'dec')]);
+is Ternary.new(:$cond, :$true, :$false).generate, $code, "new operator";
