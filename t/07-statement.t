@@ -6,51 +6,45 @@ use Java::Generate::Literal;
 use Java::Generate::Statement;
 use Test;
 
-plan 2;
+plan 4;
 
-sub generates(@statements, $result) {
-    my $signature = JavaSignature.new(:parameters());
-    my @methods = ClassMethod.new(
-        :$signature, :access<public>,
-        :name<a>, :return-type<boolean>,
-        :@statements);    
-    my $class = Class.new(:access<public>, :name<A>, :@methods);
-    $class.generate eq $result;
+sub generates(@statements, $result, $desc) {
+    is @statements.map(*.generate).join('\n'), $result, $desc;
 }
 
-my $code = q:to/END/;
-public class A {
+my $code = "if 1 > 0 \{\n    return true;\n\}";
 
-    public boolean a() {
-        if 1 > 0 {
-            return true;
-        };
-    }
-
-}
-END
-
-ok generates([If.new(
+generates([If.new(
     cond => InfixOp.new(left => IntLiteral.new(1, 'dec'), right => IntLiteral.new(0, 'dec'), op => '>'),
     true => Return.new(return => BooleanLiteral.new(:value)))],
-             $code), 'Single if-conditional';
+          $code, 'Single if-conditional');
 
-$code = q:to/END/;
-public class A {
+$code = "if 1 > 0 \{\n    return true;\n\} else \{\n    return false;\n\}";
 
-    public boolean a() {
-        while true {
-            0 + 1;
-            return 1;
-        };
-    }
+generates([If.new(
+    cond => InfixOp.new(left => IntLiteral.new(1, 'dec'), right => IntLiteral.new(0, 'dec'), op => '>'),
+    true => Return.new(return => BooleanLiteral.new(:value)),
+    false => Return.new(return => BooleanLiteral.new(:!value)))],
+          $code, 'if-else conditional');
 
-}
-END
+$code = "while (true) \{\n    0 + 1;\n    return 1;\n\}";
 
-ok generates([While.new(
+generates([While.new(
     cond => BooleanLiteral.new(:value),
     task => [InfixOp.new(left => IntLiteral.new(0, 'dec'), right => IntLiteral.new(1, 'dec'), op => '+'),
-             Return.new(return => IntLiteral.new(1, 'dec'))]
-                 )],
-              $code), 'while statement';
+             Return.new(return => IntLiteral.new(1, 'dec'))])],
+          $code, 'while statement');
+
+$code = "do \{\n    0 + 1;\n    return 1;\n\} while (true)";
+
+generates([While.new(:after,
+                     cond => BooleanLiteral.new(:value),
+                     task => [InfixOp.new(
+                                     left => IntLiteral.new(0, 'dec'),
+                                     right => IntLiteral.new(1, 'dec'),
+                                     op => '+'),
+                              Return.new(return => IntLiteral.new(1, 'dec'))
+                             ]
+                    )
+          ],
+          $code, 'do-while statement');

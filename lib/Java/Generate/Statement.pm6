@@ -57,11 +57,14 @@ class Return does Statement is export {
     }
 }
 
-class If does Statement is export {
+role Flow does Statement is export {
+    has Int $.indent = 4;
+}
+
+class If does Flow is export {
     has Expression $.cond;
     has Statement @.true;
     has Statement @.false;
-    has Int $.indent = 4;
 
     method generate(--> Str) {
         my $code = "if {$!cond.generate} \{\n{@!true.map(*.generate).join(";\n").indent($!indent)}\n\}";
@@ -72,13 +75,19 @@ class If does Statement is export {
     }
 }
 
-class While  does Statement is export {
+class While does Flow is export {
     has Expression $.cond;
     has Statement @.task;
-    has Int $.indent = 4;
+    has Bool $.after;
 
     method generate(--> Str) {
-        "while {$!cond.generate} \{\n{@!task.map(*.generate).join(";\n").indent($!indent)}\n\}"
+        my $condition = "while ({$!cond.generate})";
+        my $statements = " \{\n{@!task.map(*.generate).join(";\n").indent($!indent)}\n\}";
+        if $!after {
+            return "do$statements $condition";
+        } else {
+            return "{$condition}{$statements}";
+        }
     }
 }
 
