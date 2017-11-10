@@ -31,7 +31,8 @@ class MethodCall does Java::Generate::Statement::Expression is export {
 my subset Operand where Variable|Literal|Java::Generate::Statement::Expression;
 
 class PrefixOp does Java::Generate::Statement::Expression is export {
-    my subset Op of Str where '++'|'--'|'+'|'-'|'~'|'!';
+    my constant %known-ops := set '++', '--', '+', '-', '~', '!';
+    my subset Op of Str where %known-ops{$_}:exists;
     has Operand $.right;
     has Op $.op;
 
@@ -49,7 +50,8 @@ class PrefixOp does Java::Generate::Statement::Expression is export {
 }
 
 class PostfixOp does Java::Generate::Statement::Expression is export {
-    my subset Op of Str where '++'|'--';
+    my constant %known-ops := set '++', '--';
+    my subset Op of Str where %known-ops{$_}:exists;
     has Operand $.left;
     has Op $.op;
 
@@ -85,10 +87,11 @@ class Assignment does Java::Generate::Statement::Expression is export {
 }
 
 class InfixOp does Java::Generate::Statement::Expression is export {
-    my subset Op of Str where '+'|'-'|'*'|'/'|'%'|
-                              '<<'|'>>'|'>>>'|
-                              '&'|'^'|'|'|
-                              '<'|'>'|'=='|'!='||'&&'|'||';
+    my constant %known-ops := set '+', '-', '*', '/', '%',
+                              '<<', '>>','>>>',
+                              '&', '^', '|',
+                              '<=', '>=', '<', '>', '==', '!=', '&&', '||';
+    my subset Op of Str where %known-ops{$_}:exists;
 
     has Operand $.left;
     has Operand $.right;
@@ -113,12 +116,13 @@ class InfixOp does Java::Generate::Statement::Expression is export {
 }
 
 class Ternary does Java::Generate::Statement::Expression is export {
+    my constant %valid-ops := set '<', '>', '==', '!=', '&&', '||';
     has InfixOp $.cond;
     has Operand $.true;
     has Operand $.false;
 
     method generate(--> Str) {
-        unless $!cond.op eq '<'|'>'|'=='|'!='|'&&'|'||' {
+        unless %valid-ops{$!cond.op}:exists {
             die "Ternary operator condition expression is not boolean, it\'s operator is {$!cond.op}";
         }
 
