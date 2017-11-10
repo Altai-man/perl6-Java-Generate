@@ -23,24 +23,24 @@ my $class-a = Class.new(
     modifiers => <static final>
 );
 
-my $code = qq:to/END/;
-public static final class A \{
+my $code = q:to/END/;
+public static final class A {
 
     public static float field_c = 3.2;
     private static Custom field_d;
     public int field_a = 5;
     public int field_b;
-\}
+}
 END
 
 is $class-a.generate, $code, 'Class with fields';
 
-$code = qq:to/END/;
-public class Student \{
+$code = q:to/END/;
+public class Student {
 
-    Student(int i, String n) \{\}
-    Student(int i, String n, int a) \{\}
-\}
+    Student(int i, String n) {}
+    Student(int i, String n, int a) {}
+}
 END
 
 my $constructor1 = JavaSignature.new(:parameters(JavaParameter.new('i', 'int'),
@@ -60,10 +60,10 @@ my $class-student = Class.new(
 
 is $class-student.generate, $code, 'Class with constructors';
 
-$code = qq:to/END/;
-class MyPackage \{
+$code = q:to/END/;
+class MyPackage {
 
-\}
+}
 END
 
 my $class-my-package = Class.new(:access(''), :name<MyPackage>);

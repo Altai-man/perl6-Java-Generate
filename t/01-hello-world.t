@@ -40,14 +40,14 @@ my $hello-class = Class.new(
     methods => $hello-method
 );
 
-my $java = qq:to/END/;
-public class HelloWorld \{
+my $java = q:to/END/;
+public class HelloWorld {
 
-    public static void main(String[] args) \{
+    public static void main(String[] args) {
         System.out.println("Hello, World");
-    \}
+    }
 
-\}
+}
 END
 
 is $hello-class.generate, $java, 'Hello World is generated';

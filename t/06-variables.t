@@ -11,13 +11,13 @@ plan 7;
 
 my (@statements, $method);
 
-my $code = qq:to/END/;
-public void foo() \{
+my $code = q:to/END/;
+public void foo() {
     final int a;
     int b = 5;
     double c;
     b++;
-\}
+}
 END
 
 my $signature = JavaSignature.new(:parameters());

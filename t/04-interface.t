@@ -8,11 +8,11 @@ plan 5;
 
 my ($code, @methods);
 
-$code = qq:to/END/;
-public interface Animal \{
+$code = q:to/END/;
+public interface Animal {
     public void eat();
     public void travel();
-\}
+}
 END
 
 my $signature1 = JavaSignature.new(:parameters());
@@ -24,9 +24,9 @@ my $signature2 = JavaSignature.new(:parameters());
 my $interface-a = Interface.new(:access<public>, :name<Animal>, :@methods);
 is $interface-a.generate, $code, 'Interface is generated';
 
-$code = qq:to/END/;
-public interface Mammal extends Animal \{
-\}
+$code = q:to/END/;
+public interface Mammal extends Animal {
+}
 END
 
 my $interface-b = Interface.new(:access<public>, :name<Mammal>, interfaces => $interface-a);
@@ -51,18 +51,18 @@ my $class-b = Class.new(
 );
 
 
-$code = qq:to/END/;
-public class B implements Mammal \{
+$code = q:to/END/;
+public class B implements Mammal {
 
-    public void eat() \{
+    public void eat() {
 
-    \}
+    }
 
-    public void travel() \{
+    public void travel() {
 
-    \}
+    }
 
-\}
+}
 END
 
 is $class-b.generate, $code, 'Class implementing interface is generated';
@@ -73,10 +73,10 @@ my $class-c = Class.new(
     super => $class-b
 );
 
-$code = qq:to/END/;
-public class C extends B \{
+$code = q:to/END/;
+public class C extends B {
 
-\}
+}
 END
 
 is $class-c.generate, $code, 'Extended class is generated';
