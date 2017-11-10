@@ -41,7 +41,7 @@ class Class does ASTNode {
         $code ~= " \{\n\n";
         $code ~= @!static-fields.map(*.generate()).join("\n").indent($!indent) ~ "\n" if @!static-fields;
         $code ~= @!fields.map(*.generate()).join("\n").indent($!indent) ~ "\n" if @!fields;
-        $code ~= @!constructors.map(*.generate()).join("\n").indent($!indent) ~ "\n" if @!constructors;
+        $code ~= @!constructors.map(*.generate(:$!name)).join("\n").indent($!indent) ~ "\n" if @!constructors;
         $code ~= @!methods.map(*.generate()).join("\n").indent($!indent) ~ "\n" if @!methods;
         $code ~= "}\n";
     }

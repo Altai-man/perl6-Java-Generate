@@ -50,8 +50,8 @@ my $constructor2 = JavaSignature.new(:parameters(JavaParameter.new('i', 'int'),
                                                  JavaParameter.new('n', 'String'),
                                                  JavaParameter.new('a', 'int')));
 
-my @constructors = ConstructorMethod.new(:name<Student>, signature => $constructor1),
-                   ConstructorMethod.new(:name<Student>, signature => $constructor2);
+my @constructors = ConstructorMethod.new(signature => $constructor1),
+                   ConstructorMethod.new(signature => $constructor2);
 
 my $class-student = Class.new(
     :access<public>,

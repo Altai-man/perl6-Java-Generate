@@ -8,13 +8,13 @@ use Java::Generate::Utils;
 unit module Java::Generate::JavaMethod;
 
 role JavaMethod does ASTNode is export {
-    has Str $.name;
     has JavaSignature $.signature;
     has Int $.indent = 4;
 }
 
 class InterfaceMethod does JavaMethod is export {
     has AccessLevel $.access;
+    has Str $.name;
     has Str $.return-type;
 
     method generate(--> Str) {
@@ -25,8 +25,8 @@ class InterfaceMethod does JavaMethod is export {
 class ConstructorMethod does JavaMethod is export {
     has Statement @.statements;
 
-    method generate(--> Str) {
-        my $code = "{$!name}({$!signature.generate()}) \{";
+    method generate(:$name --> Str) {
+        my $code = "{$name}({$!signature.generate()}) \{";
         $code ~= {@!statements.map(*.generate()).join.indent($!indent)} if @!statements;
         $code ~= "\}";
     }
@@ -34,8 +34,9 @@ class ConstructorMethod does JavaMethod is export {
 
 class ClassMethod does JavaMethod is export {
     has AccessLevel $.access;
-    has Statement @.statements;
     has Modifier @.modifiers;
+    has Statement @.statements;
+    has Str $.name;
     has Str $.return-type;
 
     method generate(--> Str) {
