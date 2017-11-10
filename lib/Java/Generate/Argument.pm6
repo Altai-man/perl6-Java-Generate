@@ -1,3 +1,1 @@
-use Java::Generate::ASTNode;
-
-role Argument does ASTNode {}
+role Argument {}

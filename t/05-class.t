@@ -4,15 +4,16 @@ use Java::Generate::JavaMethod;
 use Java::Generate::JavaParameter;
 use Java::Generate::JavaSignature;
 use Java::Generate::Literal;
+use Java::Generate::Statement;
 use Java::Generate::Variable;
 use Test;
 
 plan 4;
 
-my @fields = InstanceVariable.new(:name<field_a>, :type<int>, :access<public>, :default<5>),
+my @fields = InstanceVariable.new(:name<field_a>, :type<int>, :access<public>, default => IntLiteral.new(5, 'dec')),
              InstanceVariable.new(:name<field_b>, :type<int>, :access<public>);
 
-my @static-fields = StaticVariable.new(:name<field_c>, :type<float>,  :access<public>, default => 3.2, class => 'A'),
+my @static-fields = StaticVariable.new(:name<field_c>, :type<float>,  :access<public>, default => FloatLiteral.new(value => 3.2.Num), class => 'A'),
                     StaticVariable.new(:name<field_d>, :type<Custom>, :access<private>, class => 'A');
 
 my $class-a = Class.new(
@@ -26,7 +27,7 @@ my $class-a = Class.new(
 my $code = q:to/END/;
 public static final class A {
 
-    public static float field_c = 3.2;
+    public static float field_c = 3.2f;
     private static Custom field_d;
     public int field_a = 5;
     public int field_b;

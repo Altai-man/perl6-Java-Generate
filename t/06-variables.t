@@ -1,10 +1,10 @@
 use Java::Generate::Class;
-use Java::Generate::Literal;
 use Java::Generate::Expression;
-use Java::Generate::Variable;
-use Java::Generate::JavaSignature;
 use Java::Generate::JavaMethod;
+use Java::Generate::JavaSignature;
+use Java::Generate::Literal;
 use Java::Generate::Statement;
+use Java::Generate::Variable;
 use Test;
 
 plan 7;
@@ -23,7 +23,7 @@ END
 my $signature = JavaSignature.new(:parameters());
 my $variable = LocalVariable.new(:name<a>, :modifiers<final>, :type<int>);
 @statements = VariableDeclaration.new($variable),
-              VariableDeclaration.new('b', 'int', (), 5),
+              VariableDeclaration.new('b', 'int', (), IntLiteral.new(5, 'dec')),
               VariableDeclaration.new('c', 'double', ()),
               PostfixOp.new(left => LocalVariable.new(:name<b>), :op<++>);
 $method = ClassMethod.new(:access<public>, :name<foo>,
@@ -42,7 +42,7 @@ $method = ClassMethod.new(:access<public>, :name<bar>,
 dies-ok { $method.generate }, 'Cannot use non-initialized local variable';
 
 # Double initialization dies
-@statements = VariableDeclaration.new('a', 'int', (), 5),
+@statements = VariableDeclaration.new('a', 'int', (), IntLiteral.new(5, 'dec')),
               PostfixOp.new(left => LocalVariable.new(:name<a>), :op<++>),
               VariableDeclaration.new('a', 'int', ());
 $method = ClassMethod.new(:access<public>, :name<bar>,

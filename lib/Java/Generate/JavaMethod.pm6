@@ -3,7 +3,6 @@ use Java::Generate::Variable;
 use Java::Generate::Statement;
 use Java::Generate::ASTNode;
 use Java::Generate::JavaSignature;
-use Java::Generate::Statement;
 use Java::Generate::Utils;
 
 unit module Java::Generate::JavaMethod;

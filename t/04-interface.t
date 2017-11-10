@@ -1,7 +1,7 @@
 use Java::Generate::Class;
-use Java::Generate::JavaSignature;
-use Java::Generate::JavaMethod;
 use Java::Generate::Interface;
+use Java::Generate::JavaMethod;
+use Java::Generate::JavaSignature;
 use Test;
 
 plan 5;

@@ -1,17 +1,16 @@
 unit module Java::Generate::Literal;
 
 use Java::Generate::Argument;
+use Java::Generate::Statement;
 use Java::Generate::Utils;
 
-role Literal is export {}
-
-class BooleanLiteral does Argument does Literal is export {
+class BooleanLiteral does Argument does Java::Generate::Statement::Literal is export {
     has Bool $.value;
 
     method generate(--> Str) { $!value ?? 'true' !! 'false' }
 }
 
-class FloatLiteral does Argument does Literal is export {
+class FloatLiteral does Argument does Java::Generate::Statement::Literal is export {
     has Num $.value;
 
     method generate(--> Str) {
@@ -25,7 +24,7 @@ class FloatLiteral does Argument does Literal is export {
     }
 }
 
-class IntLiteral does Argument does Literal is export {
+class IntLiteral does Argument does Java::Generate::Statement::Literal is export {
     has Int $.value;
     has Base $.base;
 
@@ -49,11 +48,11 @@ class IntLiteral does Argument does Literal is export {
     }
 }
 
-class NullLiteral does Argument does Literal is export {
+class NullLiteral does Argument does Java::Generate::Statement::Literal is export {
     method generate(--> Str) { "null" }
 }
 
-class StringLiteral does Argument does Literal is export {
+class StringLiteral does Argument does Java::Generate::Statement::Literal is export {
     has Str $.value;
 
     method !expand($_) { (0 xx (4 - $_.chars)).join ~ $_ }

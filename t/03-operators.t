@@ -1,5 +1,6 @@
 use Java::Generate::Expression;
 use Java::Generate::Literal;
+use Java::Generate::Statement;
 use Java::Generate::Variable;
 use Test;
 
