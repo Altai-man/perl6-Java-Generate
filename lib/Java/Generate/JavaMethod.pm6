@@ -10,6 +10,7 @@ unit module Java::Generate::JavaMethod;
 role JavaMethod does ASTNode is export {
     has Str $.name;
     has JavaSignature $.signature;
+    has Int $.indent = 4;
 }
 
 class InterfaceMethod does JavaMethod is export {
@@ -26,7 +27,7 @@ class ConstructorMethod does JavaMethod is export {
 
     method generate(--> Str) {
         my $code = "{$!name}({$!signature.generate()}) \{";
-        $code ~= "{@!statements.map(*.generate()).join.indent(4)}" if @!statements;
+        $code ~= {@!statements.map(*.generate()).join.indent($!indent)} if @!statements;
         $code ~= "\}";
     }
 }
@@ -59,7 +60,7 @@ class ClassMethod does JavaMethod is export {
                 }
                 my $c = .generate();
                 $c.ends-with(';') ?? $c !! $c ~ ';'
-            }).join("\n").indent(4) if @!statements;
+            }).join("\n").indent($!indent) if @!statements;
         $code ~= "\n\}\n";
     }
 }

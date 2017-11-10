@@ -14,6 +14,7 @@ class Class does ASTNode {
     has Class $.super;
     has Interface @.interfaces;
     has Modifier @.modifiers;
+    has Int $.indent = 4;
 
     method generate(--> Str) {
         my $interfaces-to-implement = @!interfaces.Array;
@@ -33,10 +34,10 @@ class Class does ASTNode {
         $code ~= ' implements ' ~ @!interfaces.map(*.name).join(', ') if @!interfaces;
         $code ~= " extends {$!super.name}" if $!super;
         $code ~= " \{\n\n";
-        $code ~= @!static-fields.map(*.generate()).join("\n").indent(4) ~ "\n" if @!static-fields;
-        $code ~= @!fields.map(*.generate()).join("\n").indent(4) ~ "\n" if @!fields;
-        $code ~= @!constructors.map(*.generate()).join("\n").indent(4) ~ "\n" if @!constructors;
-        $code ~= @!methods.map(*.generate()).join("\n").indent(4) ~ "\n" if @!methods;
+        $code ~= @!static-fields.map(*.generate()).join("\n").indent($!indent) ~ "\n" if @!static-fields;
+        $code ~= @!fields.map(*.generate()).join("\n").indent($!indent) ~ "\n" if @!fields;
+        $code ~= @!constructors.map(*.generate()).join("\n").indent($!indent) ~ "\n" if @!constructors;
+        $code ~= @!methods.map(*.generate()).join("\n").indent($!indent) ~ "\n" if @!methods;
         $code ~= "}\n";
     }
 }
