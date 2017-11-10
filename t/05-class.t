@@ -8,7 +8,7 @@ use Java::Generate::Statement;
 use Java::Generate::Variable;
 use Test;
 
-plan 4;
+plan 5;
 
 my @fields = InstanceVariable.new(:name<field_a>, :type<int>, :access<public>, default => IntLiteral.new(5, 'dec')),
              InstanceVariable.new(:name<field_b>, :type<int>, :access<public>);
@@ -71,9 +71,32 @@ my $class-my-package = Class.new(:access(''), :name<MyPackage>);
 
 is $class-my-package.generate, $code, 'Class with package access level';
 
-$code = "count > 1 ? new Student(\"Name\") : new Student(\"Name\", 1)";
+$code = 'count > 1 ? new Student("Name") : new Student("Name", 1)';
 
 my $cond  = InfixOp.new(left => LocalVariable.new(:name<count>), right => IntLiteral.new(1, 'dec'), op => '>');
 my $true  = ConstructorCall.new(:name<Student>, arguments => StringLiteral.new(value => 'Name'));
 my $false = ConstructorCall.new(:name<Student>, arguments => [StringLiteral.new(value => 'Name'), IntLiteral.new(1, 'dec')]);
 is Ternary.new(:$cond, :$true, :$false).generate, $code, "new operator";
+
+$code = q:to/END/;
+public class Calculator {
+
+    public int sum(int a, int b) {
+        return a + b;
+    }
+
+}
+END
+
+my $signature = JavaSignature.new(:parameters(JavaParameter.new('a', 'int'),
+                                              JavaParameter.new('b', 'int')));
+my @statements = Return.new(return => InfixOp.new(left => LocalVariable.new(:name<a>), right => LocalVariable.new(:name<b>), :op<+>));
+my @methods = ClassMethod.new(:$signature, :access<public>, :name<sum>, :return-type<int>, :@statements);
+
+my $class-calculator = Class.new(
+    :access<public>,
+    :name<Calculator>,
+    :@methods
+);
+
+is $class-calculator.generate, $code, 'Class with constructors';

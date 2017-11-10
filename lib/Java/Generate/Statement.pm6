@@ -48,3 +48,11 @@ class VariableDeclaration does Statement is export {
         $!variable.generate();
     }
 }
+
+class Return does Statement is export {
+    has Expression $.return;
+
+    method generate(--> Str) {
+        "return {$!return.generate};"
+    }
+}

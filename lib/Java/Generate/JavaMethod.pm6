@@ -37,13 +37,19 @@ class ClassMethod does JavaMethod is export {
     has Modifier @.modifiers;
     has Statement @.statements;
     has Str $.name;
-    has Str $.return-type;
+    has $.return-type;
 
     method generate(--> Str) {
         my $code = "{$!access}";
         $code ~= ' ' ~ @!modifiers.join(' ') if @!modifiers;
         $code ~= " {$!return-type} {$!name}({$!signature.generate()}) \{\n";
-        my LocalVariable %locals;
+        my LocalVariable %locals = $!signature.parameters.map(
+            {
+                my $var = LocalVariable.new(name => .name, type => .type);
+                $var.initialized = True;
+                .name => $var
+            }
+        ).Hash;
         $code ~= @!statements.map(
             {
                 if $_ ~~ VariableDeclaration {
@@ -62,6 +68,9 @@ class ClassMethod does JavaMethod is export {
                 my $c = .generate();
                 $c.ends-with(';') ?? $c !! $c ~ ';'
             }).join("\n").indent($!indent) if @!statements;
+        if (not $!return-type eq 'void') && @!statements[*-1] !~~ Return {
+            die "Method {$!name} must return {$!return-type}";
+        }
         $code ~= "\n\}\n";
     }
 }
