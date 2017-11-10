@@ -4,7 +4,7 @@ use Java::Generate::JavaMethod;
 use Java::Generate::JavaSignature;
 use Test;
 
-plan 5;
+plan 6;
 
 my ($code, @methods);
 
@@ -35,10 +35,19 @@ is $interface-b.generate, $code, 'Extended interface is generated';
 my $class-a = Class.new(
     :access<public>,
     :name<A>,
+    interfaces => $interface-b,
+    :check-implementation
+);
+
+dies-ok { $class-a.generate }, 'Class checks methods implementation if set';
+
+$class-a = Class.new(
+    :access<public>,
+    :name<A>,
     interfaces => $interface-b
 );
 
-dies-ok { $class-a.generate }, 'Class must implement methods';
+lives-ok { $class-a.generate }, 'Class doesn\'t implementation by default';
 
 @methods = ClassMethod.new(:access<public>, :name<eat>, signature => $signature1, :return-type<void>),
            ClassMethod.new(:access<public>, :name<travel>, signature => $signature2, :return-type<void>);

@@ -5,27 +5,32 @@ use Java::Generate::Utils;
 use Java::Generate::Variable;
 
 class Class does ASTNode {
+    my subset Super where Str|Class;
+
     has AccessLevel $.access;
     has Str $.name;
     has InstanceVariable @.fields;
     has StaticVariable @.static-fields;
     has ClassMethod @.methods;
     has ConstructorMethod @.constructors;
-    has Class $.super;
+    has Super $.super;
     has Interface @.interfaces;
     has Modifier @.modifiers;
     has Int $.indent = 4;
+    has Bool $.check-implementation = False;
 
     method generate(--> Str) {
-        my $interfaces-to-implement = @!interfaces.Array;
-        my @methods-to-implement;
-        for @$interfaces-to-implement {
-            @methods-to-implement.append: .methods.map(*.name);
-            $interfaces-to-implement.append: .interfaces;
-        }
-        unless (@methods-to-implement.Set (<=) @!methods.map(*.name).Set) {
-            my $methods = (@methods-to-implement.Set (-) @!methods.Set).keys.join(', ');
-            die "Class {$!name} must implement: $methods";
+        if $!check-implementation {
+            my @interfaces-to-implement = @!interfaces;
+            my @methods-to-implement;
+            for @interfaces-to-implement {
+                @methods-to-implement.append: .methods.map(*.name);
+                @interfaces-to-implement.append: .interfaces;
+            }
+            unless (@methods-to-implement.Set (<=) @!methods.map(*.name).Set) {
+                my $methods = (@methods-to-implement.Set (-) @!methods.Set).keys.join(', ');
+                die "Class {$!name} must implement: $methods";
+            }
         }
 
         my $code = $!access ?? "{$!access} " !! '';
