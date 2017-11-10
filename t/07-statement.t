@@ -4,9 +4,10 @@ use Java::Generate::JavaMethod;
 use Java::Generate::JavaSignature;
 use Java::Generate::Literal;
 use Java::Generate::Statement;
+use Java::Generate::Variable;
 use Test;
 
-plan 4;
+plan 5;
 
 sub generates(@statements, $result, $desc) {
     is @statements.map(*.generate).join('\n'), $result, $desc;
@@ -48,3 +49,25 @@ generates([While.new(:after,
                     )
           ],
           $code, 'do-while statement');
+
+$code = q/switch (month) {
+case 1:
+    monthValue = "January";
+    break;
+case 2:
+    monthValue = "February";
+    break;
+}/;
+
+generates([Switch.new(
+                  switch => LocalVariable.new(:name<month>, :type<int>),
+                  branches => [IntLiteral.new(1, 'dec') => Assignment.new(
+                                      left => LocalVariable.new(:name<monthValue>, :type<string>),
+                                      right => StringLiteral.new(:value<January>)),
+                               IntLiteral.new(2, 'dec') => Assignment.new(
+                                      left => LocalVariable.new(:name<monthValue>, :type<string>),
+                                      right => StringLiteral.new(:value<February>)),
+                             ]
+                    )
+          ],
+          $code, 'switch-case statement');

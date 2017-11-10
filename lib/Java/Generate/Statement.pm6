@@ -91,15 +91,29 @@ class While does Flow is export {
     }
 }
 
-# class DoWhile  does Statement is export {}
+class Switch does Flow is export {
+    has Variable $.switch;
+    has Pair @.branches;
 
-# class Switch does Statement is export {}
+    method generate(--> Str) {
+        my $code = "switch ({$!switch.reference}) \{\n";
+        for @!branches {
+            $code ~= "case {$_.key.generate}:\n";
+            $code ~= (.value.map(*.generate).join(";\n") ~ ';').indent($!indent) ~ "\nbreak;\n".indent($!indent);
+        }
+        $code ~ '}';
+    }
+}
 
 # class For does Statement is export {}
 
-# class Continue does Statement is export {}
+class Continue does Flow is export {
+    method generate(--> Str) { 'continue;' }
+}
 
-# class Break does Statement is export {}
+class Break does Flow is export {
+    method generate(--> Str) { 'break;' }
+}
 
 # class Try does Statement is export {}
 
