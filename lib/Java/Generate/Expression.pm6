@@ -76,13 +76,11 @@ class Assignment does Java::Generate::Statement::Expression is export {
     }
 
     method operands() {
-        my $right;
-        $right = ($!right.name) if $!right ~~ LocalVariable;
-        $right.append: $!right.operands if $!right ~~ Expression;
-        my $operands;
-        $operands.append: $!left.name if $!left ~~ LocalVariable;
-        $operands.append: $right if $right;
-        $operands.flat
+        my @right = ($!right.name) if $!right ~~ LocalVariable;
+        @right.append: $!right.operands if $!right ~~ Expression;
+        my @operands;
+        @operands.append: $!left.name if $!left ~~ LocalVariable;
+        @operands.append: @right;
     }
 }
 
