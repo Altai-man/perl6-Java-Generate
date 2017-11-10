@@ -68,9 +68,6 @@ class ClassMethod does JavaMethod is export {
                 my $c = .generate();
                 $c.ends-with(';') ?? $c !! $c ~ ';'
             }).join("\n").indent($!indent) if @!statements;
-        if (not $!return-type eq 'void') && @!statements[*-1] !~~ Return {
-            die "Method {$!name} must return {$!return-type}";
-        }
         $code ~= "\n\}\n";
     }
 }
