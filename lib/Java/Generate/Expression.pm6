@@ -2,6 +2,7 @@ use Java::Generate::Argument;
 use Java::Generate::Literal;
 use Java::Generate::Statement;
 use Java::Generate::Variable;
+use Java::Generate::Utils;
 
 unit module Java::Generate::Expression;
 
@@ -116,14 +117,13 @@ class InfixOp does Java::Generate::Statement::Expression is export {
 }
 
 class Ternary does Java::Generate::Statement::Expression is export {
-    my constant %valid-ops := set '<', '>', '==', '!=', '&&', '||';
     has InfixOp $.cond;
     has Operand $.true;
     has Operand $.false;
 
     method generate(--> Str) {
-        unless %valid-ops{$!cond.op}:exists {
-            die "Ternary operator condition expression is not boolean, it\'s operator is {$!cond.op}";
+        unless %boolean-ops{$!cond.op}:exists {
+            die "Ternary operator conditional expression is not boolean, its operator is {$!cond.op}";
         }
 
         my $true  = $_ ~~ Variable ?? .reference() !! .generate() given $!true;

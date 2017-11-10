@@ -56,3 +56,42 @@ class Return does Statement is export {
         "return {$!return.generate};"
     }
 }
+
+class If does Statement is export {
+    has Expression $.cond;
+    has Statement @.true;
+    has Statement @.false;
+    has Int $.indent = 4;
+
+    method generate(--> Str) {
+        my $code = "if {$!cond.generate} \{\n{@!true.map(*.generate).join(";\n").indent($!indent)}\n\}";
+        if @!false {
+            $code ~= " else \{\n{@!false.map(*.generate).join(";\n").indent($!indent)}\n\}"
+        }
+        $code;
+    }
+}
+
+class While  does Statement is export {
+    has Expression $.cond;
+    has Statement @.task;
+    has Int $.indent = 4;
+
+    method generate(--> Str) {
+        "while {$!cond.generate} \{\n{@!task.map(*.generate).join(";\n").indent($!indent)}\n\}"
+    }
+}
+
+# class DoWhile  does Statement is export {}
+
+# class Switch does Statement is export {}
+
+# class For does Statement is export {}
+
+# class Continue does Statement is export {}
+
+# class Break does Statement is export {}
+
+# class Try does Statement is export {}
+
+# class Throw does Statement is export {}
