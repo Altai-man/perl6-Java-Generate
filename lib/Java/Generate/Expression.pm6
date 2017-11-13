@@ -51,6 +51,16 @@ class PrefixOp does Java::Generate::Statement::Expression is export {
     }
 }
 
+class Slice does Java::Generate::Statement::Expression is export {
+    has Variable $.array;
+    has Operand $.index;
+
+    method generate {
+        my $index = $_ ~~ Variable ?? .reference() !! .generate() given $!index;
+        "{$!array.reference()}[$index]"
+    }
+}
+
 class PostfixOp does Java::Generate::Statement::Expression is export {
     my constant %known-ops := set '++', '--';
     my subset Op of Str where %known-ops{$_}:exists;

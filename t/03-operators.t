@@ -4,7 +4,7 @@ use Java::Generate::Statement;
 use Java::Generate::Variable;
 use Test;
 
-plan 10;
+plan 12;
 
 my ($left, $right);
 
@@ -50,3 +50,9 @@ $left = InstanceVariable.new(:name<a>);
 is PostfixOp.new(:$left, :op<++>).generate, 'this.a++', 'Postfix op';
 $right = InstanceVariable.new(:name<a>);
 is PrefixOp.new(:$right, :op<!>).generate, '!this.a', 'Prefix op';
+
+my $array = LocalVariable.new(:name<array>);
+my $index = IntLiteral.new(10, 'dec');
+is Slice.new(:$array, :$index).generate, 'array[10]', 'Slicing works';
+$index = LocalVariable.new(:name<i>);
+is Slice.new(:$array, :$index).generate, 'array[i]', 'Slicing works with non-literals';
