@@ -8,7 +8,7 @@ use Java::Generate::Statement;
 use Java::Generate::Variable;
 use Test;
 
-plan 10;
+plan 12;
 
 sub generates(@statements, $result, $desc) {
     is @statements.map(*.generate).join('\n'), $result, $desc;
@@ -103,7 +103,7 @@ generates([While.new(
 $code = "throw new EmptyStackException()";
 generates([Throw.new(exception => 'EmptyStackException')], $code, 'throw statement');
 
-$code = "try \{\n    throw new EmptyStackException();\n\} catch (EmptyStackException e) \{    return false;\n\}";
+$code = "try \{\n    throw new EmptyStackException();\n\} catch (EmptyStackException e) \{\n    return false;\n\}";
 generates(
     [Try.new(
             try => [Throw.new(exception => 'EmptyStackException')],
@@ -113,11 +113,38 @@ generates(
             ))
     ], $code, 'try/catch block');
 
-$code = "for (int i = 0; i < 10; i++) \{\n    System.out.println(i);\n\}";
+$code = "try \{\n    throw new EmptyStackException();\n\} catch (EmptyStackException e) \{\n    return false;\n\} catch (AnotherException e) \{\n    return true;\n\}";
+generates(
+    [Try.new(
+            try => [Throw.new(exception => 'EmptyStackException')],
+            catchers => [CatchBlock.new(
+                                exception => JavaParameter.new('e', 'EmptyStackException'),
+                                block => Return.new(return => BooleanLiteral.new(:!value))),
+                         CatchBlock.new(
+                                exception => JavaParameter.new('e', 'AnotherException'),
+                                block => Return.new(return => BooleanLiteral.new(:value)))]),
+    ], $code, 'try/catch block with two catchers');
+
 my $out = StaticVariable.new(
     :name<out>,
     class => 'System'
 );
+
+$code = "try \{\n    throw new EmptyStackException();\n\} catch (EmptyStackException e) \{\n    return false;\n\} finally \{\n    System.out.println(\"Final\");\n\}";
+generates(
+    [Try.new(
+            try => [Throw.new(exception => 'EmptyStackException')],
+            catchers => CatchBlock.new(
+                exception => JavaParameter.new('e', 'EmptyStackException'),
+                block => Return.new(return => BooleanLiteral.new(:!value))
+            ),
+            finally => MethodCall.new(
+                object => $out,
+                :name<println>,
+                arguments => StringLiteral.new(:value<Final>)))
+    ], $code, 'try/catch/finally block');
+
+$code = "for (int i = 0; i < 10; i++) \{\n    System.out.println(i);\n\}";
 
 generates([For.new(
     initializer => VariableDeclaration.new('i', 'int', (), IntLiteral.new(0, 'dec')),

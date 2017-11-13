@@ -22,7 +22,7 @@ class MethodCall does Java::Generate::Statement::Expression is export {
 
     method generate(--> Str) {
         my @args = @!arguments.map({ $_ ~~ Literal ?? .generate !! .reference }).join(', ');
-        "{$!object.reference()}.{$!name}({@args});";
+        "{$!object.reference()}.{$!name}({@args})";
     }
 
     method operands() {

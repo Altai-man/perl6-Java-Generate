@@ -69,11 +69,11 @@ class If does Flow is export {
     has Statement @.false;
 
     method generate(--> Str) {
-        my $true = @!true.map(*.generate).join(";\n").indent($!indent) ~ ';';
-        my $code = "if ({$!cond.generate}) \{\n$true\n\}";
+        my $true = @!true.map(*.generate).join(";\n").indent($!indent);
+        my $code = "if ({$!cond.generate}) \{\n$true;\n\}";
         if @!false {
-            my $false = @!false.map(*.generate).join(";\n").indent($!indent) ~ ';';
-            $code ~= " else \{\n$false\n\}"
+            my $false = @!false.map(*.generate).join(";\n").indent($!indent);
+            $code ~= " else \{\n$false;\n\}"
         }
         $code;
     }
@@ -88,11 +88,7 @@ class While does Flow is export {
         my $condition = "while ({$!cond.generate})";
         my $block = @!body.map(*.generate).join(";\n").indent($!indent) ~ ';';
         my $statements = " \{\n$block\n\}";
-        if $!after {
-            return "do$statements $condition;";
-        } else {
-            return "{$condition}{$statements}";
-        }
+        $!after ?? "do$statements $condition;" !! "{$condition}{$statements}";
     }
 }
 
@@ -118,11 +114,8 @@ class For does Flow is export {
 
     method generate(--> Str) {
         my $initializer = $!initializer.generate() ~ ($!initializer ~~ VariableDeclaration ?? '' !! ';');
-        my $code = "for ({$initializer} {$!cond.generate}; {$!increment.generate}) \{\n";
-        for @!body {
-            $code ~= (.generate ~ "\n").indent($!indent)
-        }
-        $code ~= '}';
+        my $block = .generate.join(";\n").indent($!indent) for @!body;
+        my $code = "for ({$initializer} {$!cond.generate}; {$!increment.generate}) \{\n$block;\n\}";
     }
 }
 
@@ -145,17 +138,15 @@ class Try does Flow is export {
     has Statement @.finally;
 
     method generate(--> Str) {
-        my $code = "try \{\n";
-        for @!try {
-            $code ~= (.generate ~ ";\n").indent($!indent);
-        }
-        $code ~= '}';
+        my $block = .generate.join(";\n").indent($!indent) for @!try;
+        my $code = "try \{\n$block;\n\}";
         for @!catchers {
-            $code ~= " catch ({.exception.generate}) \{";
-            for .block {
-                $code ~= (.generate ~ ";\n").indent($!indent);
-            }
-            $code ~= '}';
+            my $block = .generate.join(";\n").indent($!indent) for .block;
+            $code ~= " catch ({.exception.generate}) \{\n$block;\n}";
+        }
+        if @!finally {
+            my $statements = .generate.join(";\n").indent($!indent) for @!finally;
+            $code ~= " finally \{\n$statements;\n\}";
         }
         $code;
     }
