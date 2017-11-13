@@ -7,20 +7,21 @@ use Java::Generate::Statement;
 use Java::Generate::Variable;
 use Test;
 
-plan 5;
+plan 8;
 
 sub generates(@statements, $result, $desc) {
     is @statements.map(*.generate).join('\n'), $result, $desc;
+    say $result;
 }
 
-my $code = "if 1 > 0 \{\n    return true;\n\}";
+my $code = "if (1 > 0) \{\n    return true;\n\}";
 
 generates([If.new(
     cond => InfixOp.new(left => IntLiteral.new(1, 'dec'), right => IntLiteral.new(0, 'dec'), op => '>'),
     true => Return.new(return => BooleanLiteral.new(:value)))],
           $code, 'Single if-conditional');
 
-$code = "if 1 > 0 \{\n    return true;\n\} else \{\n    return false;\n\}";
+$code = "if (1 > 0) \{\n    return true;\n\} else \{\n    return false;\n\}";
 
 generates([If.new(
     cond => InfixOp.new(left => IntLiteral.new(1, 'dec'), right => IntLiteral.new(0, 'dec'), op => '>'),
@@ -32,15 +33,15 @@ $code = "while (true) \{\n    0 + 1;\n    return 1;\n\}";
 
 generates([While.new(
     cond => BooleanLiteral.new(:value),
-    task => [InfixOp.new(left => IntLiteral.new(0, 'dec'), right => IntLiteral.new(1, 'dec'), op => '+'),
+    body => [InfixOp.new(left => IntLiteral.new(0, 'dec'), right => IntLiteral.new(1, 'dec'), op => '+'),
              Return.new(return => IntLiteral.new(1, 'dec'))])],
           $code, 'while statement');
 
-$code = "do \{\n    0 + 1;\n    return 1;\n\} while (true)";
+$code = "do \{\n    0 + 1;\n    return 1;\n\} while (true);";
 
 generates([While.new(:after,
                      cond => BooleanLiteral.new(:value),
-                     task => [InfixOp.new(
+                     body => [InfixOp.new(
                                      left => IntLiteral.new(0, 'dec'),
                                      right => IntLiteral.new(1, 'dec'),
                                      op => '+'),
@@ -71,3 +72,50 @@ generates([Switch.new(
                     )
           ],
           $code, 'switch-case statement');
+
+$code = "while (true) \{\n    if (1 >= 0) \{\n        break;\n    \}\n\}";
+
+generates([While.new(
+    cond => BooleanLiteral.new(:value),
+    body => [
+             If.new(
+                 cond => InfixOp.new(
+                     left => IntLiteral.new(1, 'dec'),
+                     right => IntLiteral.new(0, 'dec'),
+                     op => '>='),
+                 true => Break.new)
+         ])],
+          $code, 'while statement + break');
+
+$code = "while (true) \{\n    if (0 >= 1) \{\n        continue;\n    \}\n\}";
+
+generates([While.new(
+    cond => BooleanLiteral.new(:value),
+    body => [
+             If.new(
+                 cond => InfixOp.new(
+                     left  => IntLiteral.new(0, 'dec'),
+                     right => IntLiteral.new(1, 'dec'),
+                     op => '>='),
+                 true => Continue.new)])],
+          $code, 'while statement + continue');
+
+$code = "for (int i = 0; i < 10; i++) \{\n    System.out.println(i);\n\}";
+my $out = StaticVariable.new(
+    :name<out>,
+    class => 'System'
+);
+
+generates([For.new(
+    initializer => VariableDeclaration.new('i', 'int', (), IntLiteral.new(0, 'dec')),
+    cond => InfixOp.new(
+        left => LocalVariable.new(:name<i>),
+        right => IntLiteral.new(10, 'dec'),
+        op => "<"
+    ),
+    increment => PostfixOp.new(left => LocalVariable.new(:name<i>), :op<++>),
+    body => [MethodCall.new(
+        object => $out,
+        :name<println>,
+        arguments => LocalVariable.new(:name<i>))])],
+          $code, 'for loop');

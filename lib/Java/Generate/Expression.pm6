@@ -21,7 +21,8 @@ class MethodCall does Java::Generate::Statement::Expression is export {
     has Argument @.arguments;
 
     method generate(--> Str) {
-        "{$!object.reference()}.{$!name}({@!arguments.map(*.generate).join(', ')});";
+        my @args = @!arguments.map({ $_ ~~ Literal ?? .generate !! .reference }).join(', ');
+        "{$!object.reference()}.{$!name}({@args});";
     }
 
     method operands() {

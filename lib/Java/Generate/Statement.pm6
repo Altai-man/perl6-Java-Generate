@@ -1,4 +1,5 @@
 use Java::Generate::ASTNode;
+use Java::Generate::Argument;
 use Java::Generate::Utils;
 
 unit module Java::Generate::Statement;
@@ -9,7 +10,7 @@ role Expression does Statement is export {
     method operands() {()}
 }
 
-role Variable does Expression is export {
+role Variable does Expression does Argument is export {
     has Expression $.default;
     has $.initialized is rw = True;
     has $.name;
@@ -67,7 +68,7 @@ class If does Flow is export {
     has Statement @.false;
 
     method generate(--> Str) {
-        my $code = "if {$!cond.generate} \{\n{@!true.map(*.generate).join(";\n").indent($!indent)}\n\}";
+        my $code = "if ({$!cond.generate}) \{\n{@!true.map(*.generate).join(";\n").indent($!indent)}\n\}";
         if @!false {
             $code ~= " else \{\n{@!false.map(*.generate).join(";\n").indent($!indent)}\n\}"
         }
@@ -77,14 +78,14 @@ class If does Flow is export {
 
 class While does Flow is export {
     has Expression $.cond;
-    has Statement @.task;
+    has Statement @.body;
     has Bool $.after;
 
     method generate(--> Str) {
         my $condition = "while ({$!cond.generate})";
-        my $statements = " \{\n{@!task.map(*.generate).join(";\n").indent($!indent)}\n\}";
+        my $statements = " \{\n{@!body.map(*.generate).join(";\n").indent($!indent)}\n\}";
         if $!after {
-            return "do$statements $condition";
+            return "do$statements $condition;";
         } else {
             return "{$condition}{$statements}";
         }
@@ -105,7 +106,21 @@ class Switch does Flow is export {
     }
 }
 
-# class For does Statement is export {}
+class For does Flow is export {
+    has Statement $.initializer;
+    has Expression $.cond;
+    has Statement $.increment;
+    has Statement @.body;
+
+    method generate(--> Str) {
+        my $initializer = $!initializer.generate() ~ ($!initializer ~~ VariableDeclaration ?? '' !! ';');
+        my $code = "for ({$initializer} {$!cond.generate}; {$!increment.generate}) \{\n";
+        for @!body {
+            $code ~= (.generate ~ "\n").indent($!indent)
+        }
+        $code ~= '}';
+    }
+}
 
 class Continue does Flow is export {
     method generate(--> Str) { 'continue;' }
