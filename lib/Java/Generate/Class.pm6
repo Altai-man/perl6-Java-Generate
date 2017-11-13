@@ -18,6 +18,7 @@ class Class does ASTNode {
     has Modifier @.modifiers;
     has Int $.indent = 4;
     has Bool $.check-implementation = False;
+    has Str @.generic-types;
 
     method generate(--> Str) {
         if $!check-implementation {
@@ -36,6 +37,7 @@ class Class does ASTNode {
         my $code = $!access ?? "{$!access} " !! '';
         $code ~= "{@!modifiers} " if @!modifiers;
         $code ~= "class {$!name}";
+        $code ~= '<' ~ @!generic-types.join(', ') ~ '>' if @!generic-types;
         $code ~= ' implements ' ~ @!interfaces.map(*.name).join(', ') if @!interfaces;
         $code ~= " extends {$!super.name}" if $!super;
         $code ~= " \{\n\n";

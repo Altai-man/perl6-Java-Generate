@@ -36,12 +36,14 @@ class ClassMethod does JavaMethod is export {
     has AccessLevel $.access;
     has Modifier @.modifiers;
     has Statement @.statements;
+    has Str @.generic-types;
     has Str $.name;
     has $.return-type;
 
     method generate(--> Str) {
         my $code = "{$!access}";
         $code ~= ' ' ~ @!modifiers.join(' ') if @!modifiers;
+        $code ~= ' <' ~ @!generic-types.join(', ') ~ '>' if @!generic-types;
         $code ~= " {$!return-type} {$!name}({$!signature.generate()}) \{\n";
         my LocalVariable %locals = $!signature.parameters.map(
             {

@@ -16,7 +16,7 @@ class InstanceVariable does Java::Generate::Statement::Variable is export {
 
 class StaticVariable does Java::Generate::Statement::Variable is export {
     has AccessLevel $.access;
-    has $.class;
+    has Str $.class;
 
     method generate(--> Str) {
         my $code = "{$!access} static{@!modifiers ?? ' ' ~ @!modifiers.join(', ') !! '' } {$!type} {$!name}";

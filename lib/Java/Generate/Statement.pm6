@@ -7,8 +7,9 @@ unit module Java::Generate::Statement;
 
 role Statement does ASTNode is export {}
 
-role Expression does Statement is export {
+role Expression does Statement does Argument is export {
     method operands() {()}
+    method reference() {self.generate}
 }
 
 role Variable does Expression does Argument is export {
