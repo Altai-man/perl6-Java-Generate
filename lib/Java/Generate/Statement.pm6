@@ -1,5 +1,6 @@
 use Java::Generate::ASTNode;
 use Java::Generate::Argument;
+use Java::Generate::JavaParameter;
 use Java::Generate::Utils;
 
 unit module Java::Generate::Statement;
@@ -54,7 +55,7 @@ class Return does Statement is export {
     has Expression $.return;
 
     method generate(--> Str) {
-        "return {$!return.generate};"
+        "return {$!return.generate}"
     }
 }
 
@@ -68,9 +69,11 @@ class If does Flow is export {
     has Statement @.false;
 
     method generate(--> Str) {
-        my $code = "if ({$!cond.generate}) \{\n{@!true.map(*.generate).join(";\n").indent($!indent)}\n\}";
+        my $true = @!true.map(*.generate).join(";\n").indent($!indent) ~ ';';
+        my $code = "if ({$!cond.generate}) \{\n$true\n\}";
         if @!false {
-            $code ~= " else \{\n{@!false.map(*.generate).join(";\n").indent($!indent)}\n\}"
+            my $false = @!false.map(*.generate).join(";\n").indent($!indent) ~ ';';
+            $code ~= " else \{\n$false\n\}"
         }
         $code;
     }
@@ -83,7 +86,8 @@ class While does Flow is export {
 
     method generate(--> Str) {
         my $condition = "while ({$!cond.generate})";
-        my $statements = " \{\n{@!body.map(*.generate).join(";\n").indent($!indent)}\n\}";
+        my $block = @!body.map(*.generate).join(";\n").indent($!indent) ~ ';';
+        my $statements = " \{\n$block\n\}";
         if $!after {
             return "do$statements $condition;";
         } else {
@@ -123,13 +127,44 @@ class For does Flow is export {
 }
 
 class Continue does Flow is export {
-    method generate(--> Str) { 'continue;' }
+    method generate(--> Str) { 'continue' }
 }
 
 class Break does Flow is export {
-    method generate(--> Str) { 'break;' }
+    method generate(--> Str) { 'break' }
 }
 
-# class Try does Statement is export {}
+class CatchBlock is export {
+    has JavaParameter $.exception;
+    has Statement @.block;
+}
 
-# class Throw does Statement is export {}
+class Try does Flow is export {
+    has Statement @.try;
+    has CatchBlock @.catchers;
+    has Statement @.finally;
+
+    method generate(--> Str) {
+        my $code = "try \{\n";
+        for @!try {
+            $code ~= (.generate ~ ";\n").indent($!indent);
+        }
+        $code ~= '}';
+        for @!catchers {
+            $code ~= " catch ({.exception.generate}) \{";
+            for .block {
+                $code ~= (.generate ~ ";\n").indent($!indent);
+            }
+            $code ~= '}';
+        }
+        $code;
+    }
+}
+
+class Throw does Flow is export {
+    has Str $.exception;
+
+    method generate(--> Str) {
+        "throw new {$!exception}()";
+    }
+}

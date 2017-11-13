@@ -2,12 +2,13 @@ use Java::Generate::Class;
 use Java::Generate::Expression;
 use Java::Generate::JavaMethod;
 use Java::Generate::JavaSignature;
+use Java::Generate::JavaParameter;
 use Java::Generate::Literal;
 use Java::Generate::Statement;
 use Java::Generate::Variable;
 use Test;
 
-plan 8;
+plan 10;
 
 sub generates(@statements, $result, $desc) {
     is @statements.map(*.generate).join('\n'), $result, $desc;
@@ -72,7 +73,7 @@ generates([Switch.new(
           ],
           $code, 'switch-case statement');
 
-$code = "while (true) \{\n    if (1 >= 0) \{\n        break;\n    \}\n\}";
+$code = "while (true) \{\n    if (1 >= 0) \{\n        break;\n    \};\n\}";
 
 generates([While.new(
     cond => BooleanLiteral.new(:value),
@@ -86,7 +87,7 @@ generates([While.new(
          ])],
           $code, 'while statement + break');
 
-$code = "while (true) \{\n    if (0 >= 1) \{\n        continue;\n    \}\n\}";
+$code = "while (true) \{\n    if (0 >= 1) \{\n        continue;\n    \};\n\}";
 
 generates([While.new(
     cond => BooleanLiteral.new(:value),
@@ -98,6 +99,19 @@ generates([While.new(
                      op => '>='),
                  true => Continue.new)])],
           $code, 'while statement + continue');
+
+$code = "throw new EmptyStackException()";
+generates([Throw.new(exception => 'EmptyStackException')], $code, 'throw statement');
+
+$code = "try \{\n    throw new EmptyStackException();\n\} catch (EmptyStackException e) \{    return false;\n\}";
+generates(
+    [Try.new(
+            try => [Throw.new(exception => 'EmptyStackException')],
+            catchers => CatchBlock.new(
+                exception => JavaParameter.new('e', 'EmptyStackException'),
+                block => Return.new(return => BooleanLiteral.new(:!value))
+            ))
+    ], $code, 'try/catch block');
 
 $code = "for (int i = 0; i < 10; i++) \{\n    System.out.println(i);\n\}";
 my $out = StaticVariable.new(
