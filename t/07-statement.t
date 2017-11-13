@@ -11,7 +11,6 @@ plan 8;
 
 sub generates(@statements, $result, $desc) {
     is @statements.map(*.generate).join('\n'), $result, $desc;
-    say $result;
 }
 
 my $code = "if (1 > 0) \{\n    return true;\n\}";
