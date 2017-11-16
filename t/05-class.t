@@ -99,4 +99,4 @@ my $class-calculator = Class.new(
     :@methods
 );
 
-is $class-calculator.generate, $code, 'Class with constructors';
+is $class-calculator.generate, $code, 'Class with a method';
