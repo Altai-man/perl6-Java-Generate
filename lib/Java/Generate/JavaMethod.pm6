@@ -18,7 +18,7 @@ class InterfaceMethod does JavaMethod is export {
     has Str $.return-type;
 
     method generate(--> Str) {
-        "{$!access} {$!return-type} {$!name}();"
+        "{$!access} {$!return-type} {$!name}({$!signature.generate()});"
     }
 }
 
