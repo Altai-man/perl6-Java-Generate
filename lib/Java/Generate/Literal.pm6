@@ -26,9 +26,7 @@ class FloatLiteral does Argument does Java::Generate::Statement::Literal is expo
 
 class IntLiteral does Argument does Java::Generate::Statement::Literal is export {
     has Int $.value;
-    has Base $.base;
-
-    method new($value, $base) { self.bless(:$value, :$base) }
+    has Base $.base = 'dec';
 
     method generate(--> Str) {
         my $int = (-(2 ** 31) <= $!value <= (2 ** 31 - 1));

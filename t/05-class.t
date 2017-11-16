@@ -10,7 +10,7 @@ use Test;
 
 plan 5;
 
-my @fields = InstanceVariable.new(:name<field_a>, :type<int>, :access<public>, default => IntLiteral.new(5, 'dec')),
+my @fields = InstanceVariable.new(:name<field_a>, :type<int>, :access<public>, default => IntLiteral.new(:value<5>)),
              InstanceVariable.new(:name<field_b>, :type<int>, :access<public>);
 
 my @static-fields = StaticVariable.new(:name<field_c>, :type<float>,  :access<public>, default => FloatLiteral.new(value => 3.2.Num), class => 'A'),
@@ -73,9 +73,9 @@ is $class-my-package.generate, $code, 'Class with package access level';
 
 $code = 'count > 1 ? new Student("Name") : new Student("Name", 1)';
 
-my $cond  = InfixOp.new(left => LocalVariable.new(:name<count>), right => IntLiteral.new(1, 'dec'), op => '>');
+my $cond  = InfixOp.new(left => LocalVariable.new(:name<count>), right => IntLiteral.new(:value<1>), op => '>');
 my $true  = ConstructorCall.new(:name<Student>, arguments => StringLiteral.new(value => 'Name'));
-my $false = ConstructorCall.new(:name<Student>, arguments => [StringLiteral.new(value => 'Name'), IntLiteral.new(1, 'dec')]);
+my $false = ConstructorCall.new(:name<Student>, arguments => [StringLiteral.new(value => 'Name'), IntLiteral.new(:value<1>)]);
 is Ternary.new(:$cond, :$true, :$false).generate, $code, "new operator";
 
 $code = q:to/END/;

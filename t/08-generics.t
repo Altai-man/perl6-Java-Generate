@@ -35,7 +35,7 @@ my $signature = JavaSignature.new(
 
 my @statements = (
     For.new(
-        initializer => VariableDeclaration.new('i', 'int', (), IntLiteral.new(0, 'dec')),
+        initializer => VariableDeclaration.new('i', 'int', (), IntLiteral.new(:value<0>)),
         cond => InfixOp.new(
             left => LocalVariable.new(:name<i>),
             right => StaticVariable.new(

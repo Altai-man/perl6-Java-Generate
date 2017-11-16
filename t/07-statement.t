@@ -17,14 +17,14 @@ sub generates(@statements, $result, $desc) {
 my $code = "if (1 > 0) \{\n    return true;\n\}";
 
 generates([If.new(
-    cond => InfixOp.new(left => IntLiteral.new(1, 'dec'), right => IntLiteral.new(0, 'dec'), op => '>'),
+    cond => InfixOp.new(left => IntLiteral.new(value => 1), right => IntLiteral.new(value => 0), op => '>'),
     true => Return.new(return => BooleanLiteral.new(:value)))],
           $code, 'Single if-conditional');
 
 $code = "if (1 > 0) \{\n    return true;\n\} else \{\n    return false;\n\}";
 
 generates([If.new(
-    cond => InfixOp.new(left => IntLiteral.new(1, 'dec'), right => IntLiteral.new(0, 'dec'), op => '>'),
+    cond => InfixOp.new(left => IntLiteral.new(value => 1), right => IntLiteral.new(value => 0), op => '>'),
     true => Return.new(return => BooleanLiteral.new(:value)),
     false => Return.new(return => BooleanLiteral.new(:!value)))],
           $code, 'if-else conditional');
@@ -33,8 +33,8 @@ $code = "while (true) \{\n    0 + 1;\n    return 1;\n\}";
 
 generates([While.new(
     cond => BooleanLiteral.new(:value),
-    body => [InfixOp.new(left => IntLiteral.new(0, 'dec'), right => IntLiteral.new(1, 'dec'), op => '+'),
-             Return.new(return => IntLiteral.new(1, 'dec'))])],
+    body => [InfixOp.new(left => IntLiteral.new(value => 0), right => IntLiteral.new(value => 1), op => '+'),
+             Return.new(return => IntLiteral.new(value => 1))])],
           $code, 'while statement');
 
 $code = "do \{\n    0 + 1;\n    return 1;\n\} while (true);";
@@ -42,10 +42,10 @@ $code = "do \{\n    0 + 1;\n    return 1;\n\} while (true);";
 generates([While.new(:after,
                      cond => BooleanLiteral.new(:value),
                      body => [InfixOp.new(
-                                     left => IntLiteral.new(0, 'dec'),
-                                     right => IntLiteral.new(1, 'dec'),
+                                     left => IntLiteral.new(value => 0),
+                                     right => IntLiteral.new(value => 1),
                                      op => '+'),
-                              Return.new(return => IntLiteral.new(1, 'dec'))
+                              Return.new(return => IntLiteral.new(value => 1))
                              ]
                     )
           ],
@@ -62,10 +62,10 @@ case 2:
 
 generates([Switch.new(
                   switch => LocalVariable.new(:name<month>, :type<int>),
-                  branches => [IntLiteral.new(1, 'dec') => Assignment.new(
+                  branches => [IntLiteral.new(value => 1) => Assignment.new(
                                       left => LocalVariable.new(:name<monthValue>, :type<string>),
                                       right => StringLiteral.new(:value<January>)),
-                               IntLiteral.new(2, 'dec') => Assignment.new(
+                               IntLiteral.new(value => 2) => Assignment.new(
                                       left => LocalVariable.new(:name<monthValue>, :type<string>),
                                       right => StringLiteral.new(:value<February>)),
                              ]
@@ -80,8 +80,8 @@ generates([While.new(
     body => [
              If.new(
                  cond => InfixOp.new(
-                     left => IntLiteral.new(1, 'dec'),
-                     right => IntLiteral.new(0, 'dec'),
+                     left => IntLiteral.new(value => 1),
+                     right => IntLiteral.new(value => 0),
                      op => '>='),
                  true => Break.new)
          ])],
@@ -94,8 +94,8 @@ generates([While.new(
     body => [
              If.new(
                  cond => InfixOp.new(
-                     left  => IntLiteral.new(0, 'dec'),
-                     right => IntLiteral.new(1, 'dec'),
+                     left  => IntLiteral.new(value => 0),
+                     right => IntLiteral.new(value => 1),
                      op => '>='),
                  true => Continue.new)])],
           $code, 'while statement + continue');
@@ -147,10 +147,10 @@ generates(
 $code = "for (int i = 0; i < 10; i++) \{\n    System.out.println(i);\n\}";
 
 generates([For.new(
-    initializer => VariableDeclaration.new('i', 'int', (), IntLiteral.new(0, 'dec')),
+    initializer => VariableDeclaration.new('i', 'int', (), IntLiteral.new(value => 0)),
     cond => InfixOp.new(
         left => LocalVariable.new(:name<i>),
-        right => IntLiteral.new(10, 'dec'),
+        right => IntLiteral.new(value => 10),
         op => "<"
     ),
     increment => PostfixOp.new(left => LocalVariable.new(:name<i>), :op<++>),

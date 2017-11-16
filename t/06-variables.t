@@ -23,7 +23,7 @@ END
 my $signature = JavaSignature.new(:parameters());
 my $variable = LocalVariable.new(:name<a>, :modifiers<final>, :type<int>);
 @statements = VariableDeclaration.new($variable),
-              VariableDeclaration.new('b', 'int', (), IntLiteral.new(5, 'dec')),
+              VariableDeclaration.new('b', 'int', (), IntLiteral.new(:value<5>)),
               VariableDeclaration.new('c', 'double', ()),
               PostfixOp.new(left => LocalVariable.new(:name<b>), :op<++>);
 $method = ClassMethod.new(:access<public>, :name<foo>,
@@ -34,7 +34,7 @@ is $method.generate, $code, 'Method with declarations is generated';
 
 # No initialized variable usage dies
 @statements = VariableDeclaration.new('a', 'int', ()),
-              InfixOp.new(left => LocalVariable.new(:name<a>), right => IntLiteral.new(5, 'dec') :op<+>);
+              InfixOp.new(left => LocalVariable.new(:name<a>), right => IntLiteral.new(:value<5>) :op<+>);
 $method = ClassMethod.new(:access<public>, :name<bar>,
                           :$signature, :return-type<void>,
                           :@statements);
@@ -42,7 +42,7 @@ $method = ClassMethod.new(:access<public>, :name<bar>,
 dies-ok { $method.generate }, 'Cannot use non-initialized local variable';
 
 # Double initialization dies
-@statements = VariableDeclaration.new('a', 'int', (), IntLiteral.new(5, 'dec')),
+@statements = VariableDeclaration.new('a', 'int', (), IntLiteral.new(:value<5>)),
               PostfixOp.new(left => LocalVariable.new(:name<a>), :op<++>),
               VariableDeclaration.new('a', 'int', ());
 $method = ClassMethod.new(:access<public>, :name<bar>,
@@ -75,8 +75,8 @@ lives-ok { $class.generate }, 'Method knows about class fields';
 @statements = Assignment.new(
     left  => LocalVariable.new(:name<a>),
     right => InfixOp.new(
-        left  => IntLiteral.new(5, 'dec'),
-        right => IntLiteral.new(9, 'hex')
+        left  => IntLiteral.new(:value<5>),
+        right => IntLiteral.new(:value<9>, base => 'hex')
     )
 );
 $method = ClassMethod.new(:access<public>, :name<bar>,
@@ -89,8 +89,8 @@ dies-ok { $method.generate }, 'Assignment to undeclared variable dies';
               Assignment.new(
                   left  => LocalVariable.new(:name<a>),
                   right => InfixOp.new(
-                      left  => IntLiteral.new(5, 'dec'),
-                      right => IntLiteral.new(9, 'hex'),
+                      left  => IntLiteral.new(:value<5>),
+                      right => IntLiteral.new(:value<9>, base => 'hex'),
                       op => '*'
                   )
               );
