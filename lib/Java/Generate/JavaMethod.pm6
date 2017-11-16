@@ -52,24 +52,48 @@ class ClassMethod does JavaMethod is export {
                 .name => $var
             }
         ).Hash;
+        self!check-locals(%locals, @!statements);
         $code ~= @!statements.map(
             {
-                if $_ ~~ VariableDeclaration {
-                    # Local
-                    my $var = .variable;
-                    die "Variable {.variable.name} already declared" if %locals{$var.name};
-                    %locals{$var.name} = .variable;
-                    %locals{$var.name}.initialized = True if $var.default;
-                } elsif $_ ~~ Expression {
-                    %locals{.left.name}.initialized = True if $_ ~~ Assignment;
-                    for .operands {
-                        die "Variable 「$_」 is not declared"     unless %locals{$_};
-                        die "Variable 「$_」 is not initialized!" unless %locals{$_}.initialized;
-                    }
-                }
                 my $c = .generate();
                 $c.ends-with(';') ?? $c !! $c ~ ';'
             }).join("\n").indent($!indent) if @!statements;
         $code ~= "\n\}\n";
+    }
+
+    method !check-locals(%locals is copy, @statements) {
+        for @statements {
+            # Population of scope
+            if $_ ~~ VariableDeclaration {
+                die "Variable {.variable.name} is already declared" if %locals{.variable.name};
+                %locals{.variable.name} = .variable;
+                %locals{.variable.name}.initialized = True if .variable.default;
+            } elsif $_ ~~ Expression { # Scope usage
+                %locals{.left.name}.initialized = True if $_ ~~ Assignment;
+                for .operands {
+                    die "Variable 「$_」 is not declared"     unless %locals{$_};
+                    die "Variable 「$_」 is not initialized!" unless %locals{$_}.initialized;
+                }
+            } elsif $_ ~~ If {
+                # Check both branches
+                self!check-locals(%locals, .true);
+                self!check-locals(%locals, .false);
+                # We exited the scope
+            } elsif $_ ~~ While {
+                self!check-locals(%locals, .body);
+            } elsif $_ ~~ Switch {
+                for .branches -> $branch {
+                    self!check-locals(%locals, $branch.value);
+                }
+            } elsif $_ ~~ For {
+                self!check-locals(%locals, .body);
+            } elsif $_ ~~ Try {
+                self!check-locals(%locals, .try);
+                for .catchers -> $catcher {
+                    self!check-locals(%locals, .block);
+                }
+                self!check-locals(%locals, .finally);
+            }
+        }
     }
 }

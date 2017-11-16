@@ -7,7 +7,7 @@ use Java::Generate::Statement;
 use Java::Generate::Variable;
 use Test;
 
-plan 7;
+plan 8;
 
 my (@statements, $method);
 
@@ -83,6 +83,30 @@ $method = ClassMethod.new(:access<public>, :name<bar>,
                           :$signature, :return-type<void>,
                           :@statements);
 dies-ok { $method.generate }, 'Assignment to undeclared variable dies';
+
+@statements = While.new(
+    cond => BooleanLiteral.new(:value),
+    body => [VariableDeclaration.new('a', 'int', (), IntLiteral.new(:value<5>)),
+             If.new(
+                 cond => InfixOp.new(
+                     left => LocalVariable.new(:name<a>),
+                     right => IntLiteral.new(:value<1>),
+                     op => '>='
+                 ),
+                 true => PostfixOp.new(
+                     left => LocalVariable.new(:name<a>),
+                     op => <++>
+                 ),
+                 false => PostfixOp.new(
+                     left => LocalVariable.new(:name<b>), # Oops, a typo.
+                     op => <++>
+                 )
+             )]);
+
+$method = ClassMethod.new(:access<public>, :name<a>,
+                          :$signature, :return-type<void>,
+                          :@statements);
+dies-ok { $method.generate }, 'Use of undeclared variable inside of nested blocks dies';
 
 # Assignment to undeclared variable dies
 @statements = VariableDeclaration.new('a', 'int', ()),
