@@ -1,11 +1,14 @@
 use Java::Generate::Class;
+use Java::Generate::Expression;
 use Java::Generate::Interface;
-use Java::Generate::JavaParameter;
 use Java::Generate::JavaMethod;
+use Java::Generate::JavaParameter;
 use Java::Generate::JavaSignature;
+use Java::Generate::Literal;
+use Java::Generate::Variable;
 use Test;
 
-plan 7;
+plan 8;
 
 my ($code, $signature, @methods);
 
@@ -110,3 +113,30 @@ my $interface = Interface.new(
         :return-type<void>,
         :$signature));
 is $interface.generate, $code, 'Interface with non-empty signature is generated correctly';
+
+$code = q:to/END/;
+public interface Animal {
+    Element field1 = new JLabel("Label");
+    public void eat(int type, String sound);
+}
+END
+
+$signature = JavaSignature.new(:parameters(
+                                   JavaParameter.new('type', 'int'),
+                                   JavaParameter.new('sound', 'String')));
+
+$interface = Interface.new(
+    :access<public>,
+    :name<Animal>,
+    methods => InterfaceMethod.new(
+        :access<public>,
+        :name<eat>,
+        :return-type<void>,
+        :$signature),
+    fields => InterfaceField.new(
+        :name<field1>,
+        :type<Element>,
+        default => ConstructorCall.new(:name<JLabel>, arguments => StringLiteral.new(:value<Label>))
+    )
+);
+is $interface.generate, $code, 'Interface with a signature and a field is generated correctly';
