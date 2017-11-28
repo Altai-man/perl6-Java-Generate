@@ -56,7 +56,7 @@ class Return does Statement is export {
     has Expression $.return;
 
     method generate(--> Str) {
-        "return {$!return.generate}"
+        "return {$_ ~~ Variable ?? .reference !! .generate given $!return}"
     }
 }
 
