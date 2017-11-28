@@ -58,6 +58,9 @@ case 1:
 case 2:
     monthValue = "February";
     break;
+default:
+    monthValue = "";
+    break;
 }/;
 
 generates([Switch.new(
@@ -68,8 +71,11 @@ generates([Switch.new(
                                IntLiteral.new(value => 2) => Assignment.new(
                                       left => LocalVariable.new(:name<monthValue>, :type<string>),
                                       right => StringLiteral.new(:value<February>)),
-                             ]
-                    )
+                             ],
+                  default => Assignment.new(
+                      left => LocalVariable.new(:name<monthValue>, :type<string>),
+                      right => StringLiteral.new(value => "")
+                    ))
           ],
           $code, 'switch-case statement');
 

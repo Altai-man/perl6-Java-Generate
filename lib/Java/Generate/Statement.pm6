@@ -96,12 +96,17 @@ class While does Flow is export {
 class Switch does Flow is export {
     has Variable $.switch;
     has Pair @.branches;
+    has Statement @.default;
 
     method generate(--> Str) {
         my $code = "switch ({$!switch.reference}) \{\n";
         for @!branches {
             $code ~= "case {$_.key.generate}:\n";
             $code ~= (.value.map(*.generate).join(";\n") ~ ';').indent($!indent) ~ "\nbreak;\n".indent($!indent);
+        }
+        with @!default {
+            $code ~= "default:\n";
+            $code ~= (.map(*.generate).join(";\n") ~ ';').indent($!indent) ~ "\nbreak;\n".indent($!indent);
         }
         $code ~ '}';
     }
