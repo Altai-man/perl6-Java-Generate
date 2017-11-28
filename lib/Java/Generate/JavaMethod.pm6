@@ -73,7 +73,9 @@ class ClassMethod does JavaMethod is export {
                 %locals{.variable.name} = .variable;
                 %locals{.variable.name}.initialized = True if .variable.default;
             } elsif $_ ~~ Expression { # Scope usage
-                %locals{.left.name}.initialized = True if $_ ~~ Assignment;
+                if $_ ~~ Assignment {
+                    %locals{.left.name}.initialized = True if .left ~~ LocalVariable;
+                }
                 for .operands {
                     die "Variable 「$_」 is not declared"     unless %locals{$_};
                     die "Variable 「$_」 is not initialized!" unless %locals{$_}.initialized;
