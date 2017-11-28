@@ -91,7 +91,7 @@ class While does SelfTerminating is export {
         my $condition = "while ({$!cond.generate})";
         my $block = @!body.map(*.generate).join(";\n").indent($!indent);
         if @!body {
-            $block ~= ';' if @!body[*-1] ~~ SelfTerminating;
+            $block ~= ';' if @!body[*-1] !~~ SelfTerminating;
         }
         my $statements = " \{\n$block\n\}";
         $!after ?? "do$statements $condition;" !! "{$condition}{$statements}";

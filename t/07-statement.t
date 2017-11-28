@@ -79,7 +79,7 @@ generates([Switch.new(
           ],
           $code, 'switch-case statement');
 
-$code = "while (true) \{\n    if (1 >= 0) \{\n        break;\n    \};\n\}";
+$code = "while (true) \{\n    if (1 >= 0) \{\n        break;\n    \}\n\}";
 
 generates([While.new(
     cond => BooleanLiteral.new(:value),
@@ -93,7 +93,7 @@ generates([While.new(
          ])],
           $code, 'while statement + break');
 
-$code = "while (true) \{\n    if (0 >= 1) \{\n        continue;\n    \};\n\}";
+$code = "while (true) \{\n    if (0 >= 1) \{\n        continue;\n    \}\n\}";
 
 generates([While.new(
     cond => BooleanLiteral.new(:value),
