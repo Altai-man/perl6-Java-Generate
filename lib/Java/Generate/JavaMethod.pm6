@@ -52,8 +52,10 @@ class ClassMethod does JavaMethod is export {
                 .name => $var
             }
         ).Hash;
-        %locals<this> = LocalVariable.new(:name<this>);
-        %locals<this>.initialized = True;
+        unless @!modifiers.contains("static") {
+            %locals<this> = LocalVariable.new(:name<this>);
+            %locals<this>.initialized = True;
+        }
         self!check-locals(%locals, @!statements);
         $code ~= @!statements.map(
             {
