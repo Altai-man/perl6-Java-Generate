@@ -7,6 +7,7 @@
         "Java::Generate::ASTNode": "lib/Java/Generate/ASTNode.pm6",
         "Java::Generate::Argument": "lib/Java/Generate/Argument.pm6",
         "Java::Generate::Class": "lib/Java/Generate/Class.pm6",
+        "Java::Generate::CompUnit": "lib/Java/Generate/CompUnit.pm6",
         "Java::Generate::Expression": "lib/Java/Generate/Expression.pm6",
         "Java::Generate::Interface": "lib/Java/Generate/Interface.pm6",
         "Java::Generate::JavaMethod": "lib/Java/Generate/JavaMethod.pm6",
