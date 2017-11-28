@@ -31,6 +31,6 @@ class StaticVariable does Java::Generate::Statement::Variable is export {
 class InterfaceField does Java::Generate::Statement::Variable is export {
     method generate(--> Str) {
         die "Interface field '{$!name}' must have an initializer" unless $!default;
-        "{$!type} {$!name} = {$!default.generate()};"
+        "{$!type} {$!name} = {$!default ~~ Variable ?? $!default.reference() !! $!default.generate()};"
     }
 }

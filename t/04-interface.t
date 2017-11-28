@@ -117,9 +117,12 @@ is $interface.generate, $code, 'Interface with non-empty signature is generated 
 $code = q:to/END/;
 public interface Animal {
     Element field1 = new JLabel("Label");
+    PokaPoka myPokaPoka = Data.PokaPoka;
     public void eat(int type, String sound);
 }
 END
+
+
 
 $signature = JavaSignature.new(:parameters(
                                    JavaParameter.new('type', 'int'),
@@ -133,10 +136,13 @@ $interface = Interface.new(
         :name<eat>,
         :return-type<void>,
         :$signature),
-    fields => InterfaceField.new(
+    fields => [InterfaceField.new(
         :name<field1>,
         :type<Element>,
-        default => ConstructorCall.new(:name<JLabel>, arguments => StringLiteral.new(:value<Label>))
-    )
-);
+        default => ConstructorCall.new(:name<JLabel>, arguments => StringLiteral.new(:value<Label>))),
+        InterfaceField.new(
+            :name<myPokaPoka>,
+            :type<PokaPoka>,
+            default => StaticVariable.new(:name<PokaPoka>, :class<Data>))]);
+
 is $interface.generate, $code, 'Interface with a signature and a field is generated correctly';
