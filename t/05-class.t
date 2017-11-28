@@ -79,7 +79,7 @@ my $false = ConstructorCall.new(:name<Student>, arguments => [StringLiteral.new(
 is Ternary.new(:$cond, :$true, :$false).generate, $code, "new operator";
 
 $code = q:to/END/;
-public class Calculator {
+public class Calculator extends Panel {
 
     public int sum(int a, int b) {
         return a + b;
@@ -96,7 +96,8 @@ my @methods = ClassMethod.new(:$signature, :access<public>, :name<sum>, :return-
 my $class-calculator = Class.new(
     :access<public>,
     :name<Calculator>,
-    :@methods
+    :@methods,
+    :super<Panel>
 );
 
 is $class-calculator.generate, $code, 'Class with a method';

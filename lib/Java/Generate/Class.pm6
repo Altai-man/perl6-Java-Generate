@@ -39,7 +39,7 @@ class Class does ASTNode {
         $code ~= "class {$!name}";
         $code ~= '<' ~ @!generic-types.join(', ') ~ '>' if @!generic-types;
         $code ~= ' implements ' ~ @!interfaces.map(*.name).join(', ') if @!interfaces;
-        $code ~= " extends {$!super.name}" if $!super;
+        $code ~= " extends {$_ ~~ Str ?? $_ !! .name given $!super}" if $!super;
         $code ~= " \{\n\n";
         $code ~= @!static-fields.map(*.generate()).join("\n").indent($!indent) ~ "\n" if @!static-fields;
         $code ~= @!fields.map(*.generate()).join("\n").indent($!indent) ~ "\n" if @!fields;
