@@ -103,6 +103,14 @@ class Throw does Flow is export {
     }
 }
 
+class Continue does Flow is export {
+    method generate(--> Str) { 'continue' }
+}
+
+class Break does Flow is export {
+    method generate(--> Str) { 'break' }
+}
+
 class Switch does SelfTerminating is export {
     has Variable $.switch;
     has Pair @.branches;
@@ -125,7 +133,7 @@ class Switch does SelfTerminating is export {
 
     method !do-branch($_) {
         my $line = (.map(*.generate).join(";\n") ~ ';').indent($!indent);
-        $line ~= "\nbreak;".indent($!indent) unless $_[*-1] ~~ Return|Throw;
+        $line ~= "\nbreak;".indent($!indent) unless $_[*-1] ~~ Return|Throw|Continue;
         "$line\n";
     }
 }
@@ -141,14 +149,6 @@ class For does SelfTerminating is export {
         my $block = .generate.join(";\n").indent($!indent) for @!body;
         my $code = "for ({$initializer} {$!cond.generate}; {$!increment.generate}) \{\n$block;\n\}";
     }
-}
-
-class Continue does Flow is export {
-    method generate(--> Str) { 'continue' }
-}
-
-class Break does Flow is export {
-    method generate(--> Str) { 'break' }
 }
 
 class CatchBlock is export {
