@@ -93,6 +93,14 @@ class While does Flow is export {
     }
 }
 
+class Throw does Flow is export {
+    has Str $.exception;
+
+    method generate(--> Str) {
+        "throw new {$!exception}()";
+    }
+}
+
 class Switch does Flow is export {
     has Variable $.switch;
     has Pair @.branches;
@@ -102,13 +110,19 @@ class Switch does Flow is export {
         my $code = "switch ({$!switch.reference}) \{\n";
         for @!branches {
             $code ~= "case {$_.key.generate}:\n";
-            $code ~= (.value.map(*.generate).join(";\n") ~ ';').indent($!indent) ~ "\nbreak;\n".indent($!indent);
+            $code ~= self!do-branch(.value);
         }
         with @!default {
             $code ~= "default:\n";
-            $code ~= (.map(*.generate).join(";\n") ~ ';').indent($!indent) ~ "\nbreak;\n".indent($!indent);
+            $code ~= self!do-branch($_);
         }
         $code ~ '}';
+    }
+
+    method !do-branch($_) {
+        my $line = (.map(*.generate).join(";\n") ~ ';').indent($!indent);
+        $line ~= "\nbreak;\n".indent($!indent) unless $_[*-1] ~~ Return|Throw;
+        $line;
     }
 }
 
@@ -155,13 +169,5 @@ class Try does Flow is export {
             $code ~= " finally \{\n$statements;\n\}";
         }
         $code;
-    }
-}
-
-class Throw does Flow is export {
-    has Str $.exception;
-
-    method generate(--> Str) {
-        "throw new {$!exception}()";
     }
 }
