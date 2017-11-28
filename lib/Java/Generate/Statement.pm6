@@ -64,7 +64,9 @@ role Flow does Statement is export {
     has Int $.indent = 4;
 }
 
-class If does Flow is export {
+role SelfTerminating does Flow is export {};
+
+class If does SelfTerminating is export {
     has Expression $.cond;
     has Statement @.true;
     has Statement @.false;
@@ -80,7 +82,7 @@ class If does Flow is export {
     }
 }
 
-class While does Flow is export {
+class While does SelfTerminating is export {
     has Expression $.cond;
     has Statement @.body;
     has Bool $.after;
@@ -101,7 +103,7 @@ class Throw does Flow is export {
     }
 }
 
-class Switch does Flow is export {
+class Switch does SelfTerminating is export {
     has Variable $.switch;
     has Pair @.branches;
     has Statement @.default;
@@ -128,7 +130,7 @@ class Switch does Flow is export {
     }
 }
 
-class For does Flow is export {
+class For does SelfTerminating is export {
     has Statement $.initializer;
     has Expression $.cond;
     has Statement $.increment;
@@ -154,7 +156,7 @@ class CatchBlock is export {
     has Statement @.block;
 }
 
-class Try does Flow is export {
+class Try does SelfTerminating is export {
     has Statement @.try;
     has CatchBlock @.catchers;
     has Statement @.finally;

@@ -60,7 +60,9 @@ class ClassMethod does JavaMethod is export {
         $code ~= @!statements.map(
             {
                 my $c = .generate();
-                $c.ends-with(';') ?? $c !! $c ~ ';'
+                unless $c ~~ SelfTerminating {
+                    $c.ends-with(';') ?? $c !! $c ~ ';'
+                }
             }).join("\n").indent($!indent) if @!statements;
         $code ~= "\n\}\n";
     }
