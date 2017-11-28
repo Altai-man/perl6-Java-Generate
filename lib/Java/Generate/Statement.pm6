@@ -110,19 +110,21 @@ class Switch does Flow is export {
         my $code = "switch ({$!switch.reference}) \{\n";
         for @!branches {
             $code ~= "case {$_.key.generate}:\n";
-            $code ~= self!do-branch(.value);
+            $code ~= self!do-branch(.value) if .value;
         }
         with @!default {
-            $code ~= "default:\n";
-            $code ~= self!do-branch($_);
+            if @!default {
+                $code ~= "default:\n";
+                $code ~= self!do-branch($_);
+            }
         }
         $code ~ '}';
     }
 
     method !do-branch($_) {
         my $line = (.map(*.generate).join(";\n") ~ ';').indent($!indent);
-        $line ~= "\nbreak;\n".indent($!indent) unless $_[*-1] ~~ Return|Throw;
-        $line;
+        $line ~= "\nbreak;".indent($!indent) unless $_[*-1] ~~ Return|Throw;
+        "$line\n";
     }
 }
 
