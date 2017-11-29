@@ -135,9 +135,13 @@ class Switch does SelfTerminating is export {
     }
 
     method !do-branch($_) {
-        my $line = (.map(*.generate).join(";\n") ~ ';').indent($!indent);
-        $line ~= "\nbreak;".indent($!indent) unless $_[*-1] ~~ Return|Throw|Continue;
-        "$line\n";
+        my $line = '';
+        for @$_ {
+            $line ~= .generate;
+            $line ~= $_ ~~ SelfTerminating ?? "\n" !! ";\n";
+        }
+        $line ~= "break;" unless $_[*-1] ~~ Return|Throw|Continue;
+        "$line\n".indent($!indent);
     }
 }
 
