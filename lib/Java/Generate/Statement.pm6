@@ -62,9 +62,20 @@ class Return does Statement is export {
 
 role Flow does Statement is export {
     has Int $.indent = 4;
+
+    method !get-indent() { $!indent }
 }
 
-role SelfTerminating does Flow is export {};
+role SelfTerminating does Flow is export {
+    method !generate-block(@lines) {
+        my $line;
+        for @lines {
+            $line ~= .generate;
+            $line ~= $_ ~~ SelfTerminating ?? "\n" !! ";\n";
+        }
+        $line.indent(self!get-indent);
+    }
+}
 
 class If does SelfTerminating is export {
     has Expression $.cond;
@@ -72,12 +83,8 @@ class If does SelfTerminating is export {
     has Statement @.false;
 
     method generate(--> Str) {
-        my $true = @!true.map(*.generate).join(";\n").indent($!indent);
-        my $code = "if ({$!cond.generate}) \{\n$true;\n\}";
-        if @!false {
-            my $false = @!false.map(*.generate).join(";\n").indent($!indent);
-            $code ~= " else \{\n$false;\n\}"
-        }
+        my $code = "if ({$!cond.generate}) \{\n{self!generate-block(@!true)}\}";
+        $code ~= " else \{\n{self!generate-block(@!false)}\}" if @!false;
         $code;
     }
 }
@@ -89,11 +96,7 @@ class While does SelfTerminating is export {
 
     method generate(--> Str) {
         my $condition = "while ({$!cond.generate})";
-        my $block = @!body.map(*.generate).join(";\n").indent($!indent);
-        if @!body {
-            $block ~= ';' if @!body[*-1] !~~ SelfTerminating;
-        }
-        my $statements = " \{\n$block\n\}";
+        my $statements = " \{\n{self!generate-block(@!body)}\}";
         $!after ?? "do$statements $condition;" !! "{$condition}{$statements}";
     }
 }
@@ -135,13 +138,9 @@ class Switch does SelfTerminating is export {
     }
 
     method !do-branch($_) {
-        my $line = '';
-        for @$_ {
-            $line ~= .generate;
-            $line ~= $_ ~~ SelfTerminating ?? "\n" !! ";\n";
-        }
-        $line ~= "break;" unless $_[*-1] ~~ Return|Throw|Continue;
-        "$line\n".indent($!indent);
+        my $line = self!generate-block(@$_);
+        $line ~= ' ' x self!get-indent() ~ "break;" unless $_[*-1] ~~ Return|Throw|Continue;
+        "$line\n";
     }
 }
 
@@ -153,8 +152,8 @@ class For does SelfTerminating is export {
 
     method generate(--> Str) {
         my $initializer = $!initializer.generate() ~ ($!initializer ~~ VariableDeclaration ?? '' !! ';');
-        my $block = .generate.join(";\n").indent($!indent) for @!body;
-        my $code = "for ({$initializer} {$!cond.generate}; {$!increment.generate}) \{\n$block;\n\}";
+        my $block = self!generate-block(@!body);
+        "for ({$initializer} {$!cond.generate}; {$!increment.generate}) \{\n$block\}";
     }
 }
 
@@ -169,15 +168,12 @@ class Try does SelfTerminating is export {
     has Statement @.finally;
 
     method generate(--> Str) {
-        my $block = .generate.join(";\n").indent($!indent) for @!try;
-        my $code = "try \{\n$block;\n\}";
+        my $code = "try \{\n{self!generate-block(@!try)}\}";
         for @!catchers {
-            my $block = .generate.join(";\n").indent($!indent) for .block;
-            $code ~= " catch ({.exception.generate}) \{\n$block;\n}";
+            $code ~= " catch ({.exception.generate}) \{\n{self!generate-block(.block)}}";
         }
         if @!finally {
-            my $statements = .generate.join(";\n").indent($!indent) for @!finally;
-            $code ~= " finally \{\n$statements;\n\}";
+            $code ~= " finally \{\n{self!generate-block(@!finally)}\}";
         }
         $code;
     }
