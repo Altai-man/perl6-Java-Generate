@@ -24,7 +24,7 @@ $code = q:to/END/;
 public static <E> void printArray(E[] inputArray) {
     for (int i = 0; i < inputArray.length; i++) {
         System.out.printf("%s ", inputArray[i]);
-    };
+    }
     System.out.println("Finish");
 }
 END
