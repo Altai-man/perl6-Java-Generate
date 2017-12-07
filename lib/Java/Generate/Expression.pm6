@@ -11,7 +11,7 @@ class ConstructorCall does Java::Generate::Statement::Expression is export {
     has Argument @.arguments;
 
     method generate(--> Str) {
-        "new {$!name}({@!arguments.map(*.generate).join(', ')})";
+        "new {$!name}({@!arguments.map({$_ ~~ Variable ?? .reference !! .generate}).join(', ')})";
     }
 }
 

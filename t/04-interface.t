@@ -8,7 +8,7 @@ use Java::Generate::Literal;
 use Java::Generate::Variable;
 use Test;
 
-plan 8;
+plan 9;
 
 my ($code, $signature, @methods);
 
@@ -146,3 +146,12 @@ $interface = Interface.new(
             default => StaticVariable.new(:name<PokaPoka>, :class<Data>))]);
 
 is $interface.generate, $code, 'Interface with a signature and a field is generated correctly';
+
+my $field = InterfaceField.new(:type<NazoNoField>,
+                               :name<field>,
+                               :default(ConstructorCall.new(
+                                               :name<NazoNoField>,
+                                               :arguments(
+                                                   StaticVariable.new(:name<INSTANCE>, :class<Singleton>)))));
+
+is $field.generate, "NazoNoField field = new NazoNoField(Singleton.INSTANCE);", 'Constructor treats vars as vars';
