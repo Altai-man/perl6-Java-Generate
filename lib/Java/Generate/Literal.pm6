@@ -62,15 +62,15 @@ class StringLiteral does Argument does Java::Generate::Statement::Literal is exp
     }
 
     method generate(--> Str) {
-        my $converted = $!value.comb.map(
-            {
-                my $ord = .ord;
-                $ord < 127 ??
-                $_ !!
-                $ord < 65535 ??
-                    '\u' ~ self!expand($ord.base(16)) !!
+        my $converted = $!value.NFC.list.map(
+            -> $ord {
+                $ord == 13 ?? "\\r" !!
+                $ord == 10 ?? "\\n" !!
+                $ord == ord('\\') ?? "\\\\" !!
+                $ord == ord('"') ?? "\\\"" !!
+                $ord < 127 ?? chr($ord) !!
+                $ord < 65535 ?? '\u' ~ self!expand($ord.base(16)) !!
                     self!non-bmp-sequence($ord);
-
             }).join;
         qq/"$converted"/
     }

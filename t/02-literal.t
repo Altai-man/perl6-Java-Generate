@@ -40,7 +40,7 @@ is FloatLiteral.new(value => 0.3.Num).generate, '0.3f', 'Float 0.3';
 is FloatLiteral.new(value => 6.022137e+23.Num).generate, '6.022137e+23f', 'Float';
 
 is StringLiteral.new(value => 'Hello World!').generate, '"Hello World!"', 'ASCII string';
-is StringLiteral.new(value => 'Hello \" World!').generate, '"Hello \" World!"', 'ASCII string with quotation';
-is StringLiteral.new(value => 'Hello \n World!').generate, '"Hello \n World!"', 'ASCII string with control';
+is StringLiteral.new(value => 'Hello \" World!').generate, '"Hello \\\\\\" World!"', 'ASCII string with quotation';
+is StringLiteral.new(value => 'Hello \n World!').generate, '"Hello \\\\n World!"', 'ASCII string with control';
 is StringLiteral.new(value => 'Hello, ¥ and Unicode!').generate, '"Hello, \u00A5 and Unicode!"', 'BMP Unicode string';
 is StringLiteral.new(value => 'Hello, 𐀀 and non-BMP Unicode!').generate, '"Hello, \uD800\uDC00 and non-BMP Unicode!"', 'Non-BMP Unicode string';
