@@ -66,6 +66,7 @@ class StringLiteral does Argument does Java::Generate::Statement::Literal is exp
             -> $ord {
                 $ord == 13 ?? "\\r" !!
                 $ord == 10 ?? "\\n" !!
+                $ord < 32 ?? '\u' ~ self!expand($ord.base(16)) !!
                 $ord == ord('\\') ?? "\\\\" !!
                 $ord == ord('"') ?? "\\\"" !!
                 $ord < 127 ?? chr($ord) !!
