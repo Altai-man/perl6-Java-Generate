@@ -21,5 +21,6 @@
     "meta-version": 1,
     "version": "1.0.0",
     "description": "Generates Java code from AST",
-    "authors": "Altai-man <altay-man@mail.ru>"
+    "authors": "Altai-man <altay-man@mail.ru>",
+    "support" : { "source" : "https://github.com/Altai-man/perl6-Java-Generate.git" }
 }
